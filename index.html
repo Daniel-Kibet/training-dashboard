@@ -141,7 +141,7 @@
   .export-btn:hover { opacity:.88; transform:translateY(-1px); }
   .filter-row {
     display: grid;
-    grid-template-columns: auto auto auto auto auto auto 1fr auto;
+    grid-template-columns: auto auto auto auto auto 1fr auto;
     gap: 12px; align-items: end;
   }
   .filter-group { display:flex; flex-direction:column; gap:6px; }
@@ -314,7 +314,7 @@
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  @media (max-width:1300px) {
+  @media (max-width:1200px) {
     .stats-grid { grid-template-columns:repeat(3,1fr); }
     .filter-row { grid-template-columns:1fr 1fr 1fr; }
   }
@@ -393,12 +393,6 @@
           <input type="date" class="filter-input" id="toDate">
         </div>
         <div class="filter-group">
-          <label class="filter-label">County</label>
-          <select class="filter-select" id="countyFilter" onchange="applyCountyFilter()">
-            <option value="">All Counties</option>
-          </select>
-        </div>
-        <div class="filter-group">
           <label class="filter-label">Facility Ownership</label>
           <select class="filter-select" id="ownershipFilter" onchange="applyOwnershipFilter()">
             <option value="">All Facilities</option>
@@ -425,7 +419,7 @@
       <div class="stat-card c1"><div class="stat-icon">📋</div><div class="stat-value" id="totalRegistrations">0</div><div class="stat-label">Total Registrations</div><div class="stat-sub">All time</div></div>
       <div class="stat-card c2"><div class="stat-icon">🌅</div><div class="stat-value" id="todayRegistrations">0</div><div class="stat-label">Today's Registrations</div><div class="stat-sub" id="todayDate"></div></div>
       <div class="stat-card c3"><div class="stat-icon">📅</div><div class="stat-value" id="weekRegistrations">0</div><div class="stat-label">This Week</div><div class="stat-sub">Last 7 days</div></div>
-      <div class="stat-card c4"><div class="stat-icon">🗺️</div><div class="stat-value" id="countiesCount">0</div><div class="stat-label">Counties Represented</div><div class="stat-sub" id="countiesSub">Out of 47</div></div>
+      <div class="stat-card c4"><div class="stat-icon">🗺️</div><div class="stat-value" id="countiesCount">0</div><div class="stat-label">Counties Represented</div><div class="stat-sub">Out of 47</div></div>
       <div class="stat-card c5"><div class="stat-icon">🏛️</div><div class="stat-value" id="facilityOwnership">0</div><div class="stat-label">Ownership Types</div><div class="stat-sub">Unique values</div></div>
     </div>
 
@@ -542,10 +536,17 @@ const DATA_URLS = isLocalhost ? [
   `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`
 ];
 
-// Counties are pulled dynamically from the CSV — no hardcoded list needed
+const OFFICIAL_COUNTIES = new Set([
+  'baringo','bomet','bungoma','busia','elgeyo marakwet','embu','garissa','homa bay',
+  'isiolo','kajiado','kakamega','kericho','kiambu','kilifi','kirinyaga','kisii','kisumu',
+  'kitui','kwale','laikipia','lamu','machakos','makueni','mandera','marsabit','meru',
+  'migori','mombasa','muranga',"murang'a",'nairobi','nakuru','nandi','narok','nyamira',
+  'nyandarua','nyeri','samburu','siaya','taita taveta','tana river','tanariver',
+  'tharaka nithi','tharaka-nithi','trans nzoia','turkana','uasin gishu','vihiga','wajir','west pokot'
+]);
 
 let allData=[], filteredData=[], columnMap={}, charts={};
-let activeOwnershipFilter='', activeFacilitySearch='', activeCountyFilter='';
+let activeOwnershipFilter='', activeFacilitySearch='';
 let tableLimit=100, dailyPeriod=30, roleLimit=5, countyLimit=5;
 
 // ═══════════════════════════════════════════════════
@@ -688,7 +689,6 @@ async function loadData() {
 
           filteredData=[...allData];
           populateOwnershipFilter();
-          populateCountyFilter();
           processData();
 
           document.getElementById('loadingScreen').style.display='none';
@@ -737,22 +737,6 @@ function populateOwnershipFilter() {
   });
 }
 
-function populateCountyFilter() {
-  const counts={};
-  allData.forEach(r=>{
-    const c=getVal(r,'county').trim();
-    if (c) counts[c]=(counts[c]||0)+1;
-  });
-  const sel=document.getElementById('countyFilter');
-  sel.innerHTML='<option value="">All Counties</option>';
-  // Sort alphabetically
-  Object.entries(counts)
-    .sort((a,b)=>a[0].localeCompare(b[0]))
-    .forEach(([county, count])=>{
-      sel.innerHTML+=`<option value="${county}">${county} (${count})</option>`;
-    });
-}
-
 function applyQuickPick(el,v) {
   document.querySelectorAll('.period-chips .chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
@@ -768,8 +752,6 @@ function applyQuickPick(el,v) {
   applyFilter();
 }
 
-function applyCountyFilter()    { activeCountyFilter=document.getElementById('countyFilter').value; applyFilter(); updateActiveTags(); }
-function clearCountyFilter()    { activeCountyFilter=''; document.getElementById('countyFilter').value=''; applyFilter(); updateActiveTags(); }
 function applyCustomRange()     { applyFilter(); }
 function applyOwnershipFilter() { activeOwnershipFilter=document.getElementById('ownershipFilter').value; applyFilter(); updateActiveTags(); }
 function applyFacilitySearch()  { activeFacilitySearch=document.getElementById('facilitySearch').value.trim().toLowerCase(); applyFilter(); updateActiveTags(); }
@@ -778,7 +760,6 @@ function clearFacilitySearch()  { activeFacilitySearch=''; document.getElementBy
 
 function updateActiveTags() {
   let h='';
-  if (activeCountyFilter)    h+=`<div class="filter-tag">County: ${activeCountyFilter}<button onclick="clearCountyFilter()">✕</button></div>`;
   if (activeOwnershipFilter) h+=`<div class="filter-tag">Ownership: ${activeOwnershipFilter}<button onclick="clearOwnershipFilter()">✕</button></div>`;
   if (activeFacilitySearch)  h+=`<div class="filter-tag">Facility: "${activeFacilitySearch}"<button onclick="clearFacilitySearch()">✕</button></div>`;
   document.getElementById('activeFilters').innerHTML=h;
@@ -792,7 +773,6 @@ function applyFilter() {
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;
     if (to   && d>new Date(to+'T23:59:59')) return false;
-    if (activeCountyFilter    && getVal(r,'county').trim()!==activeCountyFilter) return false;
     if (activeOwnershipFilter && normalizeOwnership(getVal(r,'ownership'))!==activeOwnershipFilter) return false;
     if (activeFacilitySearch  && !getVal(r,'facility').toLowerCase().includes(activeFacilitySearch)) return false;
     return true;
@@ -814,11 +794,10 @@ function processData() {
 
   const seen=new Set();
   filteredData.forEach(r=>{
-    const c=getVal(r,'county').trim();
-    if (c && c!=='-' && c!=='Not Specified') seen.add(c);
+    const raw=getVal(r,'county').replace(/\s+/g,' ').toLowerCase().replace(/-/g,' ').replace(/'/g,"'");
+    if (OFFICIAL_COUNTIES.has(raw)) seen.add(raw);
   });
   document.getElementById('countiesCount').textContent=seen.size;
-  document.getElementById('countiesSub').textContent=`Out of ${[...new Set(allData.map(r=>getVal(r,'county').trim()).filter(c=>c))].length} in dataset`;
 
   const ownSet=new Set();
   filteredData.forEach(r=>{

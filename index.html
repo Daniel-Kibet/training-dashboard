@@ -141,7 +141,7 @@
   .export-btn:hover { opacity:.88; transform:translateY(-1px); }
   .filter-row {
     display: grid;
-    grid-template-columns: auto auto auto auto auto 1fr auto;
+    grid-template-columns: auto auto auto auto auto auto 1fr auto;
     gap: 12px; align-items: end;
   }
   .filter-group { display:flex; flex-direction:column; gap:6px; }
@@ -194,9 +194,9 @@
   }
   .stat-card {
     background:var(--card); border:1px solid var(--border); border-radius:16px;
-    padding:1.4rem; position:relative; overflow:hidden;
+    padding:1.6rem 1.4rem; position:relative; overflow:hidden;
     transition:transform .2s, box-shadow .2s;
-    box-shadow:0 2px 12px rgba(26,111,212,0.06);
+    box-shadow:0 2px 12px rgba(26,111,212,0.07);
     animation:fadeUp 0.6s ease both;
   }
   .stat-card:nth-child(1){animation-delay:.05s}
@@ -225,16 +225,18 @@
   .c4 .stat-icon{background:rgba(245,158,11,0.1)}
   .c5 .stat-icon{background:rgba(5,150,105,0.1)}
   .stat-value {
-    font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800;
+    font-family:'Syne',sans-serif; font-size:2.4rem; font-weight:800;
     line-height:1; margin-bottom:4px;
+    letter-spacing:-0.02em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.08);
   }
-  .c1 .stat-value{color:var(--accent)}
-  .c2 .stat-value{color:var(--accent2)}
-  .c3 .stat-value{color:var(--accent3)}
-  .c4 .stat-value{color:var(--warn)}
-  .c5 .stat-value{color:var(--success)}
-  .stat-label { font-size:0.82rem; color:var(--text); font-weight:500; margin-bottom:3px; }
-  .stat-sub   { font-size:0.72rem; color:var(--muted); }
+  .c1 .stat-value{color:#0d5bbf}
+  .c2 .stat-value{color:#0284c7}
+  .c3 .stat-value{color:#024d7a}
+  .c4 .stat-value{color:#d97706}
+  .c5 .stat-value{color:#047857}
+  .stat-label { font-size:0.85rem; color:#0f2a52; font-weight:600; margin-bottom:3px; }
+  .stat-sub   { font-size:0.73rem; color:var(--muted); font-weight:400; }
 
   /* CHARTS */
   .charts-row { display:grid; gap:16px; margin-bottom:1.75rem; }
@@ -314,7 +316,7 @@
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  @media (max-width:1200px) {
+  @media (max-width:1300px) {
     .stats-grid { grid-template-columns:repeat(3,1fr); }
     .filter-row { grid-template-columns:1fr 1fr 1fr; }
   }
@@ -393,6 +395,12 @@
           <input type="date" class="filter-input" id="toDate">
         </div>
         <div class="filter-group">
+          <label class="filter-label">County</label>
+          <select class="filter-select" id="countyFilter" onchange="applyCountyFilter()">
+            <option value="">All Counties</option>
+          </select>
+        </div>
+        <div class="filter-group">
           <label class="filter-label">Facility Ownership</label>
           <select class="filter-select" id="ownershipFilter" onchange="applyOwnershipFilter()">
             <option value="">All Facilities</option>
@@ -419,7 +427,7 @@
       <div class="stat-card c1"><div class="stat-icon">📋</div><div class="stat-value" id="totalRegistrations">0</div><div class="stat-label">Total Registrations</div><div class="stat-sub">All time</div></div>
       <div class="stat-card c2"><div class="stat-icon">🌅</div><div class="stat-value" id="todayRegistrations">0</div><div class="stat-label">Today's Registrations</div><div class="stat-sub" id="todayDate"></div></div>
       <div class="stat-card c3"><div class="stat-icon">📅</div><div class="stat-value" id="weekRegistrations">0</div><div class="stat-label">This Week</div><div class="stat-sub">Last 7 days</div></div>
-      <div class="stat-card c4"><div class="stat-icon">🗺️</div><div class="stat-value" id="countiesCount">0</div><div class="stat-label">Counties Represented</div><div class="stat-sub">Out of 47</div></div>
+      <div class="stat-card c4"><div class="stat-icon">🗺️</div><div class="stat-value" id="countiesCount">0</div><div class="stat-label">Counties Represented</div><div class="stat-sub" id="countiesSub">Out of 47</div></div>
       <div class="stat-card c5"><div class="stat-icon">🏛️</div><div class="stat-value" id="facilityOwnership">0</div><div class="stat-label">Ownership Types</div><div class="stat-sub">Unique values</div></div>
     </div>
 
@@ -536,17 +544,10 @@ const DATA_URLS = isLocalhost ? [
   `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`
 ];
 
-const OFFICIAL_COUNTIES = new Set([
-  'baringo','bomet','bungoma','busia','elgeyo marakwet','embu','garissa','homa bay',
-  'isiolo','kajiado','kakamega','kericho','kiambu','kilifi','kirinyaga','kisii','kisumu',
-  'kitui','kwale','laikipia','lamu','machakos','makueni','mandera','marsabit','meru',
-  'migori','mombasa','muranga',"murang'a",'nairobi','nakuru','nandi','narok','nyamira',
-  'nyandarua','nyeri','samburu','siaya','taita taveta','tana river','tanariver',
-  'tharaka nithi','tharaka-nithi','trans nzoia','turkana','uasin gishu','vihiga','wajir','west pokot'
-]);
+// Counties are pulled dynamically from the CSV — no hardcoded list needed
 
 let allData=[], filteredData=[], columnMap={}, charts={};
-let activeOwnershipFilter='', activeFacilitySearch='';
+let activeOwnershipFilter='', activeFacilitySearch='', activeCountyFilter='';
 let tableLimit=100, dailyPeriod=30, roleLimit=5, countyLimit=5;
 
 // ═══════════════════════════════════════════════════
@@ -687,12 +688,22 @@ async function loadData() {
 
           if (allData.length===0) throw new Error('No valid data rows found');
 
-          filteredData=[...allData];
-          populateOwnershipFilter();
-          processData();
-
-          document.getElementById('loadingScreen').style.display='none';
-          document.getElementById('dashboard').style.display='block';
+          const isFirstLoad = document.getElementById('dashboard').style.display==='none';
+          
+          // Only reset filters on first load — preserve user's active filters on refresh
+          if (isFirstLoad) {
+            filteredData=[...allData];
+            populateOwnershipFilter();
+            populateCountyFilter();
+            processData();
+            document.getElementById('loadingScreen').style.display='none';
+            document.getElementById('dashboard').style.display='block';
+          } else {
+            // On auto-refresh: update allData but re-apply existing filters so user's selection stays
+            populateOwnershipFilter();
+            populateCountyFilter();
+            applyFilter(); // re-runs with whatever the user currently has set
+          }
           updateTimestamp();
           setConnStatus('success',`✓ Live — ${allData.length} records`);
         },
@@ -737,6 +748,22 @@ function populateOwnershipFilter() {
   });
 }
 
+function populateCountyFilter() {
+  const counts={};
+  allData.forEach(r=>{
+    const c=getVal(r,'county').trim();
+    if (c) counts[c]=(counts[c]||0)+1;
+  });
+  const sel=document.getElementById('countyFilter');
+  sel.innerHTML='<option value="">All Counties</option>';
+  // Sort alphabetically
+  Object.entries(counts)
+    .sort((a,b)=>a[0].localeCompare(b[0]))
+    .forEach(([county, count])=>{
+      sel.innerHTML+=`<option value="${county}">${county} (${count})</option>`;
+    });
+}
+
 function applyQuickPick(el,v) {
   document.querySelectorAll('.period-chips .chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
@@ -752,6 +779,8 @@ function applyQuickPick(el,v) {
   applyFilter();
 }
 
+function applyCountyFilter()    { activeCountyFilter=document.getElementById('countyFilter').value; applyFilter(); updateActiveTags(); }
+function clearCountyFilter()    { activeCountyFilter=''; document.getElementById('countyFilter').value=''; applyFilter(); updateActiveTags(); }
 function applyCustomRange()     { applyFilter(); }
 function applyOwnershipFilter() { activeOwnershipFilter=document.getElementById('ownershipFilter').value; applyFilter(); updateActiveTags(); }
 function applyFacilitySearch()  { activeFacilitySearch=document.getElementById('facilitySearch').value.trim().toLowerCase(); applyFilter(); updateActiveTags(); }
@@ -760,6 +789,7 @@ function clearFacilitySearch()  { activeFacilitySearch=''; document.getElementBy
 
 function updateActiveTags() {
   let h='';
+  if (activeCountyFilter)    h+=`<div class="filter-tag">County: ${activeCountyFilter}<button onclick="clearCountyFilter()">✕</button></div>`;
   if (activeOwnershipFilter) h+=`<div class="filter-tag">Ownership: ${activeOwnershipFilter}<button onclick="clearOwnershipFilter()">✕</button></div>`;
   if (activeFacilitySearch)  h+=`<div class="filter-tag">Facility: "${activeFacilitySearch}"<button onclick="clearFacilitySearch()">✕</button></div>`;
   document.getElementById('activeFilters').innerHTML=h;
@@ -773,6 +803,7 @@ function applyFilter() {
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;
     if (to   && d>new Date(to+'T23:59:59')) return false;
+    if (activeCountyFilter    && getVal(r,'county').trim()!==activeCountyFilter) return false;
     if (activeOwnershipFilter && normalizeOwnership(getVal(r,'ownership'))!==activeOwnershipFilter) return false;
     if (activeFacilitySearch  && !getVal(r,'facility').toLowerCase().includes(activeFacilitySearch)) return false;
     return true;
@@ -794,10 +825,11 @@ function processData() {
 
   const seen=new Set();
   filteredData.forEach(r=>{
-    const raw=getVal(r,'county').replace(/\s+/g,' ').toLowerCase().replace(/-/g,' ').replace(/'/g,"'");
-    if (OFFICIAL_COUNTIES.has(raw)) seen.add(raw);
+    const c=getVal(r,'county').trim();
+    if (c && c!=='-' && c!=='Not Specified') seen.add(c);
   });
   document.getElementById('countiesCount').textContent=seen.size;
+  document.getElementById('countiesSub').textContent=`Out of ${[...new Set(allData.map(r=>getVal(r,'county').trim()).filter(c=>c))].length} in dataset`;
 
   const ownSet=new Set();
   filteredData.forEach(r=>{

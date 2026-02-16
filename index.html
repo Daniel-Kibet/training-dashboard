@@ -548,7 +548,7 @@ const OFFICIAL_COUNTIES = new Set([
 ]);
 
 let allData=[], filteredData=[], columnMap={}, charts={};
-let activeOwnershipFilter='', activeFacilitySearch='', activeLevelFilter=''; // NEW: level state
+let activeOwnershipFilter='', activeFacilitySearch='', activeLevelFilter='';
 let tableLimit=100, dailyPeriod=30, roleLimit=5, countyLimit=5;
 
 function normalizeOwnership(raw) {
@@ -680,12 +680,11 @@ async function loadData() {
 
           const isFirstLoad = document.getElementById('dashboard').style.display === 'none';
 
-          populateOwnershipFilter();
-          populateLevelFilter(); // NEW
-
           if (isFirstLoad) {
             // First load: show all data, no filters
             filteredData=[...allData];
+            populateOwnershipFilter();
+            populateLevelFilter();
             processData();
             document.getElementById('loadingScreen').style.display='none';
             document.getElementById('dashboard').style.display='block';
@@ -722,29 +721,51 @@ function showError(msg) {
     </div>`;
 }
 
-// ── FILTER DROPDOWNS ──
+// ── FILTER DROPDOWNS ── (UPDATED TO USE FILTERED DATA)
 function populateOwnershipFilter() {
   const counts={};
-  allData.forEach(r=>{ const o=normalizeOwnership(getVal(r,'ownership')); counts[o]=(counts[o]||0)+1; });
+  // Changed from allData to filteredData
+  filteredData.forEach(r=>{ 
+    const o=normalizeOwnership(getVal(r,'ownership')); 
+    counts[o]=(counts[o]||0)+1; 
+  });
   const sel=document.getElementById('ownershipFilter');
   const cur=sel.value;
   sel.innerHTML='<option value="">All Facilities</option>';
   ['Government (GOK/County)','Private','Faith Based','Other'].forEach(o=>{
     if (counts[o]) sel.innerHTML+=`<option value="${o}">${o} (${counts[o]})</option>`;
   });
-  if (cur) sel.value=cur; // restore selection after refresh
+  
+  // If the current selection no longer exists in filtered data, reset it
+  if (cur && !counts[cur]) {
+    sel.value = '';
+    activeOwnershipFilter = '';
+  } else if (cur) {
+    sel.value = cur;
+  }
 }
 
-// NEW: populate level filter from actual CSV data
+// NEW: populate level filter from FILTERED data (not all data)
 function populateLevelFilter() {
   const counts={};
-  allData.forEach(r=>{ const l=(getVal(r,'level')||'').trim().toUpperCase(); if(l) counts[l]=(counts[l]||0)+1; });
+  // Changed from allData to filteredData
+  filteredData.forEach(r=>{ 
+    const l=(getVal(r,'level')||'').trim().toUpperCase(); 
+    if(l) counts[l]=(counts[l]||0)+1; 
+  });
   const sel=document.getElementById('levelFilter');
   const cur=sel.value;
   sel.innerHTML='<option value="">All Levels</option>';
   Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0]))
     .forEach(([l,n])=>{ sel.innerHTML+=`<option value="${l}">${l} (${n})</option>`; });
-  if (cur) sel.value=cur; // restore selection after refresh
+  
+  // If the current selection no longer exists in filtered data, reset it
+  if (cur && !counts[cur]) {
+    sel.value = '';
+    activeLevelFilter = '';
+  } else if (cur) {
+    sel.value = cur;
+  }
 }
 
 function applyQuickPick(el,v) {
@@ -763,16 +784,16 @@ function applyQuickPick(el,v) {
 
 function applyCustomRange()     { applyFilter(); }
 function applyOwnershipFilter() { activeOwnershipFilter=document.getElementById('ownershipFilter').value; applyFilter(); updateActiveTags(); }
-function applyLevelFilter()     { activeLevelFilter=document.getElementById('levelFilter').value;         applyFilter(); updateActiveTags(); } // NEW
+function applyLevelFilter()     { activeLevelFilter=document.getElementById('levelFilter').value;         applyFilter(); updateActiveTags(); }
 function applyFacilitySearch()  { activeFacilitySearch=document.getElementById('facilitySearch').value.trim().toLowerCase(); applyFilter(); updateActiveTags(); }
 function clearOwnershipFilter() { activeOwnershipFilter=''; document.getElementById('ownershipFilter').value=''; applyFilter(); updateActiveTags(); }
-function clearLevelFilter()     { activeLevelFilter='';     document.getElementById('levelFilter').value='';     applyFilter(); updateActiveTags(); } // NEW
+function clearLevelFilter()     { activeLevelFilter='';     document.getElementById('levelFilter').value='';     applyFilter(); updateActiveTags(); }
 function clearFacilitySearch()  { activeFacilitySearch='';  document.getElementById('facilitySearch').value='';  applyFilter(); updateActiveTags(); }
 
 function updateActiveTags() {
   let h='';
   if (activeOwnershipFilter) h+=`<div class="filter-tag">Ownership: ${activeOwnershipFilter}<button onclick="clearOwnershipFilter()">✕</button></div>`;
-  if (activeLevelFilter)     h+=`<div class="filter-tag">Level: ${activeLevelFilter}<button onclick="clearLevelFilter()">✕</button></div>`; // NEW
+  if (activeLevelFilter)     h+=`<div class="filter-tag">Level: ${activeLevelFilter}<button onclick="clearLevelFilter()">✕</button></div>`;
   if (activeFacilitySearch)  h+=`<div class="filter-tag">Facility: "${activeFacilitySearch}"<button onclick="clearFacilitySearch()">✕</button></div>`;
   document.getElementById('activeFilters').innerHTML=h;
 }
@@ -781,15 +802,30 @@ function applyFilter() {
   const from=document.getElementById('fromDate').value;
   const to=document.getElementById('toDate').value;
   const tsCol=columnMap.timestamp;
+  
+  // First apply date filters only (without ownership/level/facility filters)
+  filteredData=allData.filter(r=>{
+    const d=parseDate(r[tsCol]);
+    if (from && d<new Date(from)) return false;
+    if (to   && d>new Date(to+'T23:59:59')) return false;
+    return true;
+  });
+  
+  // Refresh both dropdowns based on date-filtered data
+  populateOwnershipFilter();
+  populateLevelFilter();
+  
+  // Now apply all filters including ownership, level, and facility search
   filteredData=allData.filter(r=>{
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;
     if (to   && d>new Date(to+'T23:59:59')) return false;
     if (activeOwnershipFilter && normalizeOwnership(getVal(r,'ownership'))!==activeOwnershipFilter) return false;
-    if (activeLevelFilter     && (getVal(r,'level')||'').trim().toUpperCase()!==activeLevelFilter) return false; // NEW
+    if (activeLevelFilter     && (getVal(r,'level')||'').trim().toUpperCase()!==activeLevelFilter) return false;
     if (activeFacilitySearch  && !getVal(r,'facility').toLowerCase().includes(activeFacilitySearch)) return false;
     return true;
   });
+  
   processData();
 }
 

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Healthcare Training Registration Dashboard</title>
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -47,11 +48,17 @@
     height: 64px;
   }
   .header-logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    font-size: 18px; box-shadow: 0 0 20px rgba(26,111,212,0.3);
+  .logo-img {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 0 16px rgba(26,111,212,0.25);
+    border: 1px solid var(--border);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .logo-img:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 24px rgba(26,111,212,0.4);
   }
   .logo-text {
     font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
@@ -333,7 +340,9 @@
 <!-- HEADER -->
 <header class="header">
   <div class="header-logo">
-    <div class="logo-icon">🎓</div>
+    <img src="logo.png" alt="Training Dashboard Logo" class="logo-img"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-icon" style="display:none;width:40px;height:40px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);border-radius:10px;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px rgba(26,111,212,0.3);">🎓</div>
     <div>
       <div class="logo-text">Training Dashboard</div>
       <div class="logo-sub">Live Registration Analytics</div>
@@ -397,7 +406,6 @@
             <option value="">All Facilities</option>
           </select>
         </div>
-        <!-- NEW: Facility Level filter -->
         <div class="filter-group">
           <label class="filter-label">Facility Level</label>
           <select class="filter-select" id="levelFilter" onchange="applyLevelFilter()">
@@ -681,7 +689,6 @@ async function loadData() {
           const isFirstLoad = document.getElementById('dashboard').style.display === 'none';
 
           if (isFirstLoad) {
-            // First load: show all data, no filters
             filteredData=[...allData];
             populateOwnershipFilter();
             populateLevelFilter();
@@ -689,7 +696,6 @@ async function loadData() {
             document.getElementById('loadingScreen').style.display='none';
             document.getElementById('dashboard').style.display='block';
           } else {
-            // Auto-refresh: keep user's active filters — do NOT reset
             applyFilter();
           }
 
@@ -721,10 +727,8 @@ function showError(msg) {
     </div>`;
 }
 
-// ── FILTER DROPDOWNS ── (UPDATED TO USE FILTERED DATA)
 function populateOwnershipFilter() {
   const counts={};
-  // Changed from allData to filteredData
   filteredData.forEach(r=>{ 
     const o=normalizeOwnership(getVal(r,'ownership')); 
     counts[o]=(counts[o]||0)+1; 
@@ -735,8 +739,6 @@ function populateOwnershipFilter() {
   ['Government (GOK/County)','Private','Faith Based','Other'].forEach(o=>{
     if (counts[o]) sel.innerHTML+=`<option value="${o}">${o} (${counts[o]})</option>`;
   });
-  
-  // If the current selection no longer exists in filtered data, reset it
   if (cur && !counts[cur]) {
     sel.value = '';
     activeOwnershipFilter = '';
@@ -745,10 +747,8 @@ function populateOwnershipFilter() {
   }
 }
 
-// NEW: populate level filter from FILTERED data (not all data)
 function populateLevelFilter() {
   const counts={};
-  // Changed from allData to filteredData
   filteredData.forEach(r=>{ 
     const l=(getVal(r,'level')||'').trim().toUpperCase(); 
     if(l) counts[l]=(counts[l]||0)+1; 
@@ -758,8 +758,6 @@ function populateLevelFilter() {
   sel.innerHTML='<option value="">All Levels</option>';
   Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0]))
     .forEach(([l,n])=>{ sel.innerHTML+=`<option value="${l}">${l} (${n})</option>`; });
-  
-  // If the current selection no longer exists in filtered data, reset it
   if (cur && !counts[cur]) {
     sel.value = '';
     activeLevelFilter = '';
@@ -803,7 +801,6 @@ function applyFilter() {
   const to=document.getElementById('toDate').value;
   const tsCol=columnMap.timestamp;
   
-  // First apply date filters only (without ownership/level/facility filters)
   filteredData=allData.filter(r=>{
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;
@@ -811,11 +808,9 @@ function applyFilter() {
     return true;
   });
   
-  // Refresh both dropdowns based on date-filtered data
   populateOwnershipFilter();
   populateLevelFilter();
   
-  // Now apply all filters including ownership, level, and facility search
   filteredData=allData.filter(r=>{
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;

@@ -56,10 +56,7 @@
     border: 1px solid var(--border);
     transition: transform 0.2s, box-shadow 0.2s;
   }
-  .logo-img:hover {
-    transform: scale(1.06);
-    box-shadow: 0 0 24px rgba(26,111,212,0.4);
-  }
+  .logo-img:hover { transform: scale(1.06); box-shadow: 0 0 24px rgba(26,111,212,0.4); }
   .logo-text {
     font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
     letter-spacing: -0.02em;
@@ -90,35 +87,149 @@
   .refresh-btn svg { transition: transform 0.5s; }
   .refresh-btn:hover svg { transform: rotate(180deg); }
 
+  /* ANALYTICS BUTTON */
+  .analytics-btn {
+    display: flex; align-items: center; gap: 7px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    border: none; border-radius: 8px;
+    padding: 7px 16px; color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.3);
+  }
+  .analytics-btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.4); }
+
+  /* ANALYTICS MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(10,20,50,0.55); backdrop-filter: blur(6px);
+    align-items: flex-start; justify-content: center;
+    padding: 24px 16px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: 24px;
+    width: 100%; max-width: 1100px;
+    box-shadow: 0 24px 80px rgba(10,20,50,0.25);
+    border: 1px solid var(--border);
+    animation: modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    overflow: hidden;
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.94) translateY(-20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #7c3aed08, #a855f708);
+  }
+  .modal-title-group { display: flex; align-items: center; gap: 14px; }
+  .modal-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+  }
+  .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--text); }
+  .modal-subtitle { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+  .modal-close {
+    width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--muted); font-size: 1.1rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: #fef2f2; border-color: #fca5a5; color: var(--danger); }
+  .modal-tabs {
+    display: flex; gap: 0; border-bottom: 1px solid var(--border);
+    padding: 0 2rem; background: var(--bg);
+  }
+  .modal-tab {
+    padding: 12px 20px; font-family: 'DM Sans', sans-serif; font-size: 0.83rem;
+    font-weight: 500; color: var(--muted); border: none; background: none;
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .modal-tab.active { color: #7c3aed; border-bottom-color: #7c3aed; font-weight: 600; }
+  .modal-tab:hover:not(.active) { color: var(--text); }
+  .modal-body { padding: 2rem; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SUMMARY CARDS ROW */
+  .summary-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; margin-bottom: 2rem;
+  }
+  .sum-card {
+    background: linear-gradient(135deg, var(--bg), #fff);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.2rem; text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .sum-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,111,212,0.1); }
+  .sum-card-val {
+    font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .sum-card-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+  .c-purple .sum-card-val { color: #7c3aed; }
+  .c-blue   .sum-card-val { color: var(--accent); }
+  .c-green  .sum-card-val { color: var(--success); }
+  .c-amber  .sum-card-val { color: var(--warn); }
+
+  /* ANALYTICS TABLE */
+  .analytics-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  .analytics-table { width: 100%; border-collapse: collapse; }
+  .analytics-table thead { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+  .analytics-table th {
+    padding: 11px 14px; text-align: left; color: #fff;
+    font-family: 'Syne', sans-serif; font-size: 0.72rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+  }
+  .analytics-table td {
+    padding: 10px 14px; font-size: 0.83rem; color: var(--text);
+    border-bottom: 1px solid rgba(208,224,247,0.5);
+  }
+  .analytics-table tbody tr:hover { background: rgba(124,58,237,0.03); }
+  .analytics-table tbody tr:last-child td { border-bottom: none; font-weight: 700; color: #7c3aed; background: rgba(124,58,237,0.04); }
+  .badge-gok     { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(5,150,105,0.1); color:var(--success); border:1px solid rgba(5,150,105,0.25); }
+  .badge-private { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(220,38,38,0.08); color:var(--danger); border:1px solid rgba(220,38,38,0.2); }
+  .badge-faith   { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(245,158,11,0.1); color:var(--warn); border:1px solid rgba(245,158,11,0.25); }
+  .badge-total   { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(124,58,237,0.1); color:#7c3aed; border:1px solid rgba(124,58,237,0.25); }
+  .progress-bar-wrap { display:flex; align-items:center; gap:8px; }
+  .progress-bar { flex:1; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#7c3aed,#a855f7); transition:width 0.5s; }
+  .progress-pct  { font-size:0.72rem; color:var(--muted); min-width:32px; }
+
+  /* CHARTS IN MODAL */
+  .modal-charts-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:1.5rem; }
+  .modal-chart-card {
+    background:var(--bg); border:1px solid var(--border); border-radius:14px;
+    padding:1.25rem;
+  }
+  .modal-chart-title { font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; margin-bottom:1rem; color:var(--text); }
+  .modal-chart-canvas { position:relative; height:220px; }
+
+  /* Section divider */
+  .section-label {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #7c3aed;
+    margin-bottom: 1rem; display:flex; align-items:center; gap:8px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:rgba(124,58,237,0.15); }
+
   /* LOADING */
   .loading-screen {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-height: calc(100vh - 64px); gap: 1rem;
   }
-  .spinner {
-    width: 44px; height: 44px; border: 3px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;
-  }
+  .spinner { width:44px; height:44px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { color: var(--muted); font-size: 0.9rem; }
   .loading-sub  { color: var(--muted); font-size: 0.78rem; }
-  .error-card {
-    background: var(--card); border: 1px solid #fca5a5; border-radius: 16px;
-    padding: 2rem; max-width: 560px; margin: 2rem auto;
-    box-shadow: 0 4px 20px rgba(220,38,38,0.08);
-  }
+  .error-card { background:var(--card); border:1px solid #fca5a5; border-radius:16px; padding:2rem; max-width:560px; margin:2rem auto; box-shadow:0 4px 20px rgba(220,38,38,0.08); }
   .error-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--danger); margin-bottom:.5rem; }
   .error-body  { font-size:0.82rem; color:var(--muted); margin-bottom:1rem; line-height:1.6; }
-  .debug-box {
-    background:#f0f5ff; border:1px solid var(--border); border-radius:8px;
-    padding:.75rem; font-family:monospace; font-size:0.72rem; color:var(--muted);
-    margin-bottom:1rem; word-break:break-all;
-  }
-  .retry-btn {
-    background:var(--accent); color:#fff; border:none; border-radius:8px;
-    padding:8px 20px; font-family:'DM Sans',sans-serif; font-size:0.85rem;
-    font-weight:500; cursor:pointer;
-  }
+  .debug-box { background:#f0f5ff; border:1px solid var(--border); border-radius:8px; padding:.75rem; font-family:monospace; font-size:0.72rem; color:var(--muted); margin-bottom:1rem; word-break:break-all; }
+  .retry-btn { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:8px 20px; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; }
   .retry-btn:hover { opacity:.85; }
 
   /* LAYOUT */
@@ -127,113 +238,52 @@
   @keyframes slideDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
 
   /* FILTER BAR */
-  .filter-section {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 1.5rem; margin-bottom: 1.75rem;
-    box-shadow: 0 2px 12px rgba(26,111,212,0.06);
-    animation: slideDown 0.45s ease;
-  }
+  .filter-section { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.5rem; margin-bottom:1.75rem; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:slideDown 0.45s ease; }
   .filter-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
-  .filter-title {
-    font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700;
-    text-transform:uppercase; letter-spacing:0.1em; color:var(--muted);
-  }
-  .export-btn {
-    display:flex; align-items:center; gap:7px;
-    background:linear-gradient(135deg,#059669,#0ea5e9);
-    border:none; border-radius:8px; padding:7px 16px;
-    color:#fff; font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:500;
-    cursor:pointer; transition:opacity .2s, transform .15s;
-  }
+  .filter-title { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .export-btn { display:flex; align-items:center; gap:7px; background:linear-gradient(135deg,#059669,#0ea5e9); border:none; border-radius:8px; padding:7px 16px; color:#fff; font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:500; cursor:pointer; transition:opacity .2s, transform .15s; }
   .export-btn:hover { opacity:.88; transform:translateY(-1px); }
-  .filter-row {
-    display: flex; flex-wrap: wrap;
-    gap: 12px; align-items: end;
-  }
+  .filter-row { display:flex; flex-wrap:wrap; gap:12px; align-items:end; }
   .filter-group { display:flex; flex-direction:column; gap:6px; }
   .filter-label { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
   .period-chips { display:flex; gap:6px; flex-wrap:wrap; }
-  .chip {
-    padding:5px 13px; border-radius:20px; border:1px solid var(--border);
-    background:var(--bg); color:var(--muted); font-size:0.78rem;
-    cursor:pointer; transition:all .18s; white-space:nowrap; font-family:'DM Sans',sans-serif;
-  }
+  .chip { padding:5px 13px; border-radius:20px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:0.78rem; cursor:pointer; transition:all .18s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
   .chip:hover { border-color:var(--accent); color:var(--accent); }
   .chip.active { background:rgba(26,111,212,0.12); border-color:var(--accent); color:var(--accent); font-weight:500; }
-  .filter-input, .filter-select {
-    background:var(--bg); border:1px solid var(--border); border-radius:8px;
-    padding:7px 12px; color:var(--text); font-family:'DM Sans',sans-serif;
-    font-size:0.85rem; outline:none; transition:border-color .2s; width:100%;
-  }
+  .filter-input, .filter-select { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:7px 12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.85rem; outline:none; transition:border-color .2s; width:100%; }
   .filter-input:focus, .filter-select:focus { border-color:var(--accent); }
   .filter-input::placeholder { color:var(--muted); }
   .filter-input { min-width:140px; }
-  .filter-select {
-    min-width:170px; cursor:pointer; appearance:none; padding-right:28px;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b8cba' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 10px center;
-  }
+  .filter-select { min-width:170px; cursor:pointer; appearance:none; padding-right:28px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b8cba' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
   .filter-select option { background:var(--surface); }
-  .apply-btn {
-    display:flex; align-items:center; gap:7px;
-    background:rgba(26,111,212,0.1); border:1px solid var(--accent);
-    border-radius:8px; padding:7px 18px; color:var(--accent);
-    font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500;
-    cursor:pointer; transition:all .2s; white-space:nowrap;
-  }
+  .apply-btn { display:flex; align-items:center; gap:7px; background:rgba(26,111,212,0.1); border:1px solid var(--accent); border-radius:8px; padding:7px 18px; color:var(--accent); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:all .2s; white-space:nowrap; }
   .apply-btn:hover { background:rgba(26,111,212,0.18); box-shadow:var(--glow); }
   .active-filters { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-  .filter-tag {
-    display:flex; align-items:center; gap:7px;
-    background:rgba(26,111,212,0.08); border:1px solid rgba(26,111,212,0.25);
-    border-radius:20px; padding:4px 10px; font-size:0.75rem; color:var(--accent);
-  }
-  .filter-tag button {
-    background:var(--danger); color:#fff; border:none; border-radius:10px;
-    padding:1px 6px; font-size:0.68rem; cursor:pointer;
-  }
+  .filter-tag { display:flex; align-items:center; gap:7px; background:rgba(26,111,212,0.08); border:1px solid rgba(26,111,212,0.25); border-radius:20px; padding:4px 10px; font-size:0.75rem; color:var(--accent); }
+  .filter-tag button { background:var(--danger); color:#fff; border:none; border-radius:10px; padding:1px 6px; font-size:0.68rem; cursor:pointer; }
 
   /* STATS */
-  .stats-grid {
-    display:grid; grid-template-columns:repeat(5,1fr);
-    gap:16px; margin-bottom:1.75rem;
-  }
-  .stat-card {
-    background:var(--card); border:1px solid var(--border); border-radius:16px;
-    padding:1.4rem; position:relative; overflow:hidden;
-    transition:transform .2s, box-shadow .2s;
-    box-shadow:0 2px 12px rgba(26,111,212,0.06);
-    animation:fadeUp 0.6s ease both;
-  }
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:1.75rem; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.4rem; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:fadeUp 0.6s ease both; }
   .stat-card:nth-child(1){animation-delay:.05s}
   .stat-card:nth-child(2){animation-delay:.10s}
   .stat-card:nth-child(3){animation-delay:.15s}
   .stat-card:nth-child(4){animation-delay:.20s}
   .stat-card:nth-child(5){animation-delay:.25s}
   .stat-card:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(26,111,212,0.12); }
-  .stat-card::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:3px;
-    border-radius:16px 16px 0 0;
-  }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:16px 16px 0 0; }
   .stat-card.c1::before{background:linear-gradient(90deg,var(--accent),transparent)}
   .stat-card.c2::before{background:linear-gradient(90deg,var(--accent2),transparent)}
   .stat-card.c3::before{background:linear-gradient(90deg,var(--accent3),transparent)}
   .stat-card.c4::before{background:linear-gradient(90deg,var(--warn),transparent)}
   .stat-card.c5::before{background:linear-gradient(90deg,var(--success),transparent)}
-  .stat-icon {
-    width:38px; height:38px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:17px; margin-bottom:.9rem;
-  }
+  .stat-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:.9rem; }
   .c1 .stat-icon{background:rgba(26,111,212,0.1)}
   .c2 .stat-icon{background:rgba(14,165,233,0.1)}
   .c3 .stat-icon{background:rgba(3,105,161,0.1)}
   .c4 .stat-icon{background:rgba(245,158,11,0.1)}
   .c5 .stat-icon{background:rgba(5,150,105,0.1)}
-  .stat-value {
-    font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800;
-    line-height:1; margin-bottom:4px;
-  }
+  .stat-value { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; line-height:1; margin-bottom:4px; }
   .c1 .stat-value{color:var(--accent)}
   .c2 .stat-value{color:var(--accent2)}
   .c3 .stat-value{color:var(--accent3)}
@@ -246,72 +296,36 @@
   .charts-row { display:grid; gap:16px; margin-bottom:1.75rem; }
   .charts-2col { grid-template-columns:1fr 1fr; }
   .charts-1col { grid-template-columns:1fr; }
-  .chart-card {
-    background:var(--card); border:1px solid var(--border); border-radius:16px;
-    padding:1.5rem; box-shadow:0 2px 12px rgba(26,111,212,0.06);
-    animation:fadeUp 0.6s ease 0.2s both;
-  }
-  .chart-header {
-    display:flex; justify-content:space-between; align-items:flex-start;
-    margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border);
-  }
+  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:fadeUp 0.6s ease 0.2s both; }
+  .chart-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
   .chart-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:var(--text); }
   .chart-sub   { font-size:0.75rem; color:var(--muted); margin-top:2px; }
-  .toggle-group {
-    display:flex; background:var(--bg); border:1px solid var(--border);
-    border-radius:8px; overflow:hidden;
-  }
-  .toggle-btn {
-    padding:4px 11px; font-size:0.72rem; font-family:'DM Sans',sans-serif;
-    background:none; border:none; color:var(--muted); cursor:pointer; transition:all .2s;
-  }
+  .toggle-group { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+  .toggle-btn { padding:4px 11px; font-size:0.72rem; font-family:'DM Sans',sans-serif; background:none; border:none; color:var(--muted); cursor:pointer; transition:all .2s; }
   .toggle-btn.active { background:rgba(26,111,212,0.12); color:var(--accent); font-weight:600; }
   .toggle-btn:hover:not(.active) { color:var(--text); }
   .chart-canvas { position:relative; height:280px; }
 
   /* TABLE */
-  .table-section {
-    background:var(--card); border:1px solid var(--border); border-radius:16px;
-    padding:1.5rem; box-shadow:0 2px 12px rgba(26,111,212,0.06);
-    animation:fadeUp 0.6s ease 0.3s both;
-  }
-  .table-header {
-    display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:1.25rem; flex-wrap:wrap; gap:12px;
-  }
+  .table-section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:fadeUp 0.6s ease 0.3s both; }
+  .table-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:12px; }
   .table-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; }
   .show-chips { display:flex; gap:5px; }
-  .show-chip {
-    padding:4px 12px; border-radius:6px; border:1px solid var(--border);
-    background:var(--bg); color:var(--muted); font-size:0.75rem;
-    cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif;
-  }
+  .show-chip { padding:4px 12px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:0.75rem; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
   .show-chip.active { background:rgba(14,165,233,0.12); border-color:var(--accent2); color:var(--accent2); font-weight:500; }
   .table-wrap { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; }
   thead { background:linear-gradient(90deg,var(--accent),var(--accent2)); }
-  th {
-    padding:11px 13px; text-align:left; font-family:'Syne',sans-serif;
-    font-size:0.72rem; font-weight:700; color:#fff;
-    text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap;
-  }
+  th { padding:11px 13px; text-align:left; font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; }
   td { padding:10px 13px; font-size:0.82rem; color:var(--text); border-bottom:1px solid rgba(208,224,247,0.5); }
   tbody tr:hover { background:rgba(26,111,212,0.03); }
   .td-muted { color:var(--muted); }
-  .role-badge {
-    display:inline-block; padding:2px 9px; border-radius:10px;
-    font-size:0.7rem; font-weight:600; text-transform:uppercase;
-    letter-spacing:0.04em; white-space:nowrap;
-    background:rgba(26,111,212,0.1); color:var(--accent); border:1px solid rgba(26,111,212,0.2);
-  }
+  .role-badge { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap; background:rgba(26,111,212,0.1); color:var(--accent); border:1px solid rgba(26,111,212,0.2); }
   .own-gov     { background:rgba(5,150,105,0.08); color:var(--success); border:1px solid rgba(5,150,105,0.2); }
   .own-private { background:rgba(220,38,38,0.08); color:var(--danger);  border:1px solid rgba(220,38,38,0.2); }
   .own-faith   { background:rgba(245,158,11,0.08); color:var(--warn);   border:1px solid rgba(245,158,11,0.2); }
   .own-other   { background:rgba(14,165,233,0.08); color:var(--accent2); border:1px solid rgba(14,165,233,0.2); }
-  .table-footer {
-    display:flex; justify-content:space-between; align-items:center;
-    margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);
-  }
+  .table-footer { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
   .row-count { font-size:0.78rem; color:var(--muted); }
   .empty-state { text-align:center; padding:3rem 1rem; color:var(--muted); }
   .empty-icon  { font-size:2.5rem; margin-bottom:.75rem; }
@@ -320,19 +334,9 @@
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  @media (max-width:1200px) {
-    .stats-grid { grid-template-columns:repeat(3,1fr); }
-    .filter-row { flex-wrap:wrap; }
-  }
-  @media (max-width:900px) {
-    .stats-grid { grid-template-columns:1fr 1fr; }
-    .charts-2col { grid-template-columns:1fr; }
-    .main { padding:1rem; }
-  }
-  @media (max-width:600px) {
-    .stats-grid { grid-template-columns:1fr; }
-    .header-right .last-updated { display:none; }
-  }
+  @media (max-width:1200px) { .stats-grid{grid-template-columns:repeat(3,1fr);} .filter-row{flex-wrap:wrap;} .summary-row{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:900px)  { .stats-grid{grid-template-columns:1fr 1fr;} .charts-2col{grid-template-columns:1fr;} .main{padding:1rem;} .modal-charts-row{grid-template-columns:1fr;} }
+  @media (max-width:600px)  { .stats-grid{grid-template-columns:1fr;} .header-right .last-updated{display:none;} .summary-row{grid-template-columns:1fr 1fr;} }
 </style>
 </head>
 <body>
@@ -354,12 +358,131 @@
       <span id="connText">Connecting...</span>
     </div>
     <span class="last-updated" id="lastUpdated"></span>
+    <button class="analytics-btn" onclick="openAnalytics()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </button>
     <button class="refresh-btn" onclick="loadData()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
       Refresh
     </button>
   </div>
 </header>
+
+<!-- ==================== ANALYTICS MODAL ==================== -->
+<div class="modal-overlay" id="analyticsModal" onclick="handleModalClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon">📊</div>
+        <div>
+          <div class="modal-title">Training Analytics Report</div>
+          <div class="modal-subtitle" id="analyticsSubtitle">Based on current filter selection</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeAnalytics()">✕</button>
+    </div>
+
+    <!-- TABS -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab(this,'tab-overview')">Overview</button>
+      <button class="modal-tab" onclick="switchTab(this,'tab-date')">By Date</button>
+      <button class="modal-tab" onclick="switchTab(this,'tab-level')">By Facility Level</button>
+      <button class="modal-tab" onclick="switchTab(this,'tab-county')">By County</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ===== OVERVIEW TAB ===== -->
+      <div class="tab-panel active" id="tab-overview">
+        <div class="summary-row">
+          <div class="sum-card c-purple">
+            <div class="sum-card-val" id="an-total">—</div>
+            <div class="sum-card-label">Total Registrations</div>
+          </div>
+          <div class="sum-card c-blue">
+            <div class="sum-card-val" id="an-gok">—</div>
+            <div class="sum-card-label">GOK / Government</div>
+          </div>
+          <div class="sum-card c-green">
+            <div class="sum-card-val" id="an-private">—</div>
+            <div class="sum-card-label">Private Facilities</div>
+          </div>
+          <div class="sum-card c-amber">
+            <div class="sum-card-val" id="an-faith">—</div>
+            <div class="sum-card-label">Faith Based</div>
+          </div>
+        </div>
+
+        <div class="section-label">Ownership Breakdown</div>
+        <div class="modal-charts-row">
+          <div class="modal-chart-card">
+            <div class="modal-chart-title">Registrations by Ownership Type</div>
+            <div class="modal-chart-canvas"><canvas id="overviewOwnerChart"></canvas></div>
+          </div>
+          <div class="modal-chart-card">
+            <div class="modal-chart-title">Share by Ownership</div>
+            <div class="modal-chart-canvas"><canvas id="overviewPieChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="section-label">Top 10 Counties</div>
+        <div class="analytics-table-wrap">
+          <table class="analytics-table">
+            <thead><tr><th>#</th><th>County</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th><th>Share</th></tr></thead>
+            <tbody id="topCountyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== DATE TAB ===== -->
+      <div class="tab-panel" id="tab-date">
+        <div class="section-label">Daily Registrations by Ownership</div>
+        <div class="modal-chart-card" style="margin-bottom:1.5rem">
+          <div class="modal-chart-title" id="dateTrendTitle">Daily Registrations — filtered selection</div>
+          <div class="modal-chart-canvas" style="height:260px"><canvas id="dateStackedChart"></canvas></div>
+        </div>
+        <div class="analytics-table-wrap">
+          <table class="analytics-table">
+            <thead><tr><th>Date</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th></tr></thead>
+            <tbody id="dateTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== LEVEL TAB ===== -->
+      <div class="tab-panel" id="tab-level">
+        <div class="section-label">Registration by KEPH Facility Level</div>
+        <div class="modal-chart-card" style="margin-bottom:1.5rem">
+          <div class="modal-chart-title">Registrations by Facility Level &amp; Ownership</div>
+          <div class="modal-chart-canvas" style="height:260px"><canvas id="levelGroupedChart"></canvas></div>
+        </div>
+        <div class="analytics-table-wrap">
+          <table class="analytics-table">
+            <thead><tr><th>Facility Level</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th><th>% of Total</th></tr></thead>
+            <tbody id="levelTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== COUNTY TAB ===== -->
+      <div class="tab-panel" id="tab-county">
+        <div class="section-label">All 47 Counties — Detailed Breakdown</div>
+        <div class="modal-chart-card" style="margin-bottom:1.5rem">
+          <div class="modal-chart-title">All Counties (Top 20 shown)</div>
+          <div class="modal-chart-canvas" style="height:320px"><canvas id="allCountyChart"></canvas></div>
+        </div>
+        <div class="analytics-table-wrap">
+          <table class="analytics-table">
+            <thead><tr><th>Rank</th><th>County</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th><th>Coverage</th></tr></thead>
+            <tbody id="countyFullTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+  </div><!-- /modal -->
+</div>
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen" class="loading-screen">
@@ -532,6 +655,304 @@
 </div>
 
 <script>
+/* ============================================================
+   ANALYTICS — fully dynamic, driven by filteredData
+   ============================================================ */
+const GOK_COLOR   = '#059669';
+const PRIV_COLOR  = '#dc2626';
+const FAITH_COLOR = '#f59e0b';
+
+let aCharts = {};
+function destroyAChart(id) { if(aCharts[id]){ aCharts[id].destroy(); delete aCharts[id]; } }
+
+/* ── Categorise a single row's ownership into GOK / Private / Faith / Other ── */
+function ownershipBucket(row) {
+  const o = normalizeOwnership(getVal(row, 'ownership'));
+  if (o.includes('Gov'))   return 'gok';
+  if (o === 'Private')     return 'private';
+  if (o.includes('Faith')) return 'faith';
+  return 'other';
+}
+
+/* ── Compute all four breakdown tables from filteredData ── */
+function computeAnalytics() {
+  const tsCol = columnMap.timestamp;
+
+  /* totals */
+  let totGok=0, totPriv=0, totFaith=0, totOther=0;
+  filteredData.forEach(r => {
+    const b = ownershipBucket(r);
+    if (b==='gok')     totGok++;
+    else if (b==='private') totPriv++;
+    else if (b==='faith')   totFaith++;
+    else                    totOther++;
+  });
+  const grandTotal = filteredData.length;
+
+  /* by date */
+  const dateMap = {};
+  filteredData.forEach(r => {
+    const d = parseDate(r[tsCol]);
+    const key = d.toLocaleDateString('en-GB'); // dd/mm/yyyy
+    if (!dateMap[key]) dateMap[key] = {gok:0, private:0, faith:0, other:0};
+    dateMap[key][ownershipBucket(r)]++;
+  });
+  // sort chronologically
+  const byDate = Object.entries(dateMap).sort((a,b)=>{
+    const [da,ma,ya]=a[0].split('/'), [db,mb,yb]=b[0].split('/');
+    return (ya+ma+da).localeCompare(yb+mb+db);
+  }).map(([date, v]) => ({ date, gok:v.gok, private:v.private, faith:v.faith, other:v.other, total:v.gok+v.private+v.faith+v.other }));
+
+  /* by level */
+  const levelMap = {};
+  filteredData.forEach(r => {
+    const lvl = (getVal(r,'level')||'Not Specified').trim().toUpperCase();
+    if (!levelMap[lvl]) levelMap[lvl] = {gok:0, private:0, faith:0, other:0};
+    levelMap[lvl][ownershipBucket(r)]++;
+  });
+  const byLevel = Object.entries(levelMap).sort((a,b)=>a[0].localeCompare(b[0]))
+    .map(([level, v]) => ({ level, gok:v.gok, private:v.private, faith:v.faith, other:v.other, total:v.gok+v.private+v.faith+v.other }));
+
+  /* by county */
+  const countyMap = {};
+  filteredData.forEach(r => {
+    const c = (getVal(r,'county')||'Not Specified').trim();
+    if (!countyMap[c]) countyMap[c] = {gok:0, private:0, faith:0, other:0};
+    countyMap[c][ownershipBucket(r)]++;
+  });
+  const byCounty = Object.entries(countyMap).sort((a,b)=>(b[1].gok+b[1].private+b[1].faith+b[1].other)-(a[1].gok+a[1].private+a[1].faith+a[1].other))
+    .map(([county, v]) => ({ county, gok:v.gok, private:v.private, faith:v.faith, other:v.other, total:v.gok+v.private+v.faith+v.other }));
+
+  return { grandTotal, totGok, totPriv, totFaith, totOther, byDate, byLevel, byCounty };
+}
+
+function openAnalytics() {
+  document.getElementById('analyticsModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // always rebuild from current filteredData
+  setTimeout(() => buildAnalyticsCharts(), 80);
+}
+
+function closeAnalytics() {
+  document.getElementById('analyticsModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === document.getElementById('analyticsModal')) closeAnalytics();
+}
+
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function buildAnalyticsCharts() {
+  const { grandTotal, totGok, totPriv, totFaith, totOther, byDate, byLevel, byCounty } = computeAnalytics();
+
+  /* ── Update subtitle ── */
+  const fromVal = document.getElementById('fromDate').value;
+  const toVal   = document.getElementById('toDate').value;
+  const dateRange = (fromVal || toVal) ? `${fromVal||'…'} → ${toVal||'…'}` : 'All time';
+  document.getElementById('analyticsSubtitle').textContent =
+    `${grandTotal.toLocaleString()} registrations · ${dateRange} · based on active filters`;
+
+  /* ── OVERVIEW: summary cards ── */
+  document.getElementById('an-total').textContent   = grandTotal.toLocaleString();
+  document.getElementById('an-gok').textContent     = totGok.toLocaleString();
+  document.getElementById('an-private').textContent = totPriv.toLocaleString();
+  document.getElementById('an-faith').textContent   = totFaith.toLocaleString();
+
+  /* ── OVERVIEW: ownership bar ── */
+  destroyAChart('overviewOwner');
+  aCharts.overviewOwner = new Chart(document.getElementById('overviewOwnerChart'), {
+    type: 'bar',
+    data: {
+      labels: ['GOK / Government', 'Private', 'Faith Based', 'Other'],
+      datasets: [{ data: [totGok, totPriv, totFaith, totOther],
+        backgroundColor: [GOK_COLOR, PRIV_COLOR, FAITH_COLOR, '#6366f1'], borderRadius: 8, borderSkipped: false }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ y:{beginAtZero:true, ticks:{color:'#6b8cba'}, grid:{color:'rgba(208,224,247,0.5)'}},
+               x:{ticks:{color:'#0f2a52',font:{size:11}}, grid:{display:false}} } }
+  });
+
+  /* ── OVERVIEW: ownership doughnut ── */
+  const pct = v => grandTotal ? (v/grandTotal*100).toFixed(1)+'%' : '0%';
+  destroyAChart('overviewPie');
+  aCharts.overviewPie = new Chart(document.getElementById('overviewPieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: [`GOK (${pct(totGok)})`, `Private (${pct(totPriv)})`, `Faith (${pct(totFaith)})`, `Other (${pct(totOther)})`],
+      datasets: [{ data: [totGok, totPriv, totFaith, totOther],
+        backgroundColor: [GOK_COLOR, PRIV_COLOR, FAITH_COLOR, '#6366f1'], borderWidth:3, borderColor:'#fff' }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11}, color:'#0f2a52' } } } }
+  });
+
+  /* ── OVERVIEW: top 10 counties table ── */
+  const top10 = byCounty.slice(0, 10);
+  document.getElementById('topCountyTableBody').innerHTML = top10.map((c,i) => `
+    <tr>
+      <td style="color:var(--muted);font-weight:600">${i+1}</td>
+      <td style="font-weight:600">${c.county}</td>
+      <td><span class="badge-gok">${c.gok}</span></td>
+      <td><span class="badge-private">${c.private}</span></td>
+      <td><span class="badge-faith">${c.faith}</span></td>
+      <td><span class="badge-total">${c.total}</span></td>
+      <td>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%"></div></div>
+          <span class="progress-pct">${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%</span>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  /* ── DATE: update chart title ── */
+  document.getElementById('dateTrendTitle').textContent =
+    `Daily Registrations — ${byDate.length} day${byDate.length===1?'':'s'} in selection`;
+
+  /* ── DATE: stacked bar chart ── */
+  destroyAChart('dateStacked');
+  aCharts.dateStacked = new Chart(document.getElementById('dateStackedChart'), {
+    type: 'bar',
+    data: {
+      labels: byDate.map(d => d.date),
+      datasets: [
+        { label:'GOK',         data:byDate.map(d=>d.gok),     backgroundColor:GOK_COLOR,   borderRadius:0 },
+        { label:'Private',     data:byDate.map(d=>d.private), backgroundColor:PRIV_COLOR,  borderRadius:0 },
+        { label:'Faith Based', data:byDate.map(d=>d.faith),   backgroundColor:FAITH_COLOR, borderRadius:0 },
+        { label:'Other',       data:byDate.map(d=>d.other),   backgroundColor:'#6366f1',   borderRadius:0 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:11}, color:'#0f2a52' } } },
+      scales:{ x:{ stacked:true, ticks:{color:'#0f2a52',maxRotation:45}, grid:{display:false} },
+               y:{ stacked:true, beginAtZero:true, ticks:{color:'#6b8cba'}, grid:{color:'rgba(208,224,247,0.5)'} } } }
+  });
+
+  /* ── DATE: table ── */
+  const dateTotGok=byDate.reduce((s,d)=>s+d.gok,0);
+  const dateTotPriv=byDate.reduce((s,d)=>s+d.private,0);
+  const dateTotFaith=byDate.reduce((s,d)=>s+d.faith,0);
+  document.getElementById('dateTableBody').innerHTML =
+    byDate.map(d => `<tr>
+      <td style="font-weight:500">${d.date}</td>
+      <td><span class="badge-gok">${d.gok}</span></td>
+      <td><span class="badge-private">${d.private}</span></td>
+      <td><span class="badge-faith">${d.faith}</span></td>
+      <td><span class="badge-total">${d.total}</span></td>
+    </tr>`).join('') +
+    `<tr>
+      <td>GRAND TOTAL</td>
+      <td><span class="badge-gok">${dateTotGok}</span></td>
+      <td><span class="badge-private">${dateTotPriv}</span></td>
+      <td><span class="badge-faith">${dateTotFaith}</span></td>
+      <td><span class="badge-total">${grandTotal}</span></td>
+    </tr>`;
+
+  /* ── LEVEL: grouped bar ── */
+  destroyAChart('levelGrouped');
+  aCharts.levelGrouped = new Chart(document.getElementById('levelGroupedChart'), {
+    type: 'bar',
+    data: {
+      labels: byLevel.map(l => l.level),
+      datasets: [
+        { label:'GOK',         data:byLevel.map(l=>l.gok),     backgroundColor:GOK_COLOR,   borderRadius:4 },
+        { label:'Private',     data:byLevel.map(l=>l.private), backgroundColor:PRIV_COLOR,  borderRadius:4 },
+        { label:'Faith Based', data:byLevel.map(l=>l.faith),   backgroundColor:FAITH_COLOR, borderRadius:4 },
+        { label:'Other',       data:byLevel.map(l=>l.other),   backgroundColor:'#6366f1',   borderRadius:4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 }, color: '#0f2a52' } } },
+      scales: {
+        x: { ticks: { color: '#0f2a52' }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { color: '#6b8cba' }, grid: { color: 'rgba(208,224,247,0.5)' } }
+      }
+    }
+  });
+
+  /* ── LEVEL: table ── */
+  const lvlTotGok   = byLevel.reduce((s,l)=>s+l.gok,0);
+  const lvlTotPriv  = byLevel.reduce((s,l)=>s+l.private,0);
+  const lvlTotFaith = byLevel.reduce((s,l)=>s+l.faith,0);
+  document.getElementById('levelTableBody').innerHTML =
+    byLevel.map(l => `<tr>
+      <td style="font-weight:500">${l.level}</td>
+      <td><span class="badge-gok">${l.gok}</span></td>
+      <td><span class="badge-private">${l.private}</span></td>
+      <td><span class="badge-faith">${l.faith}</span></td>
+      <td><span class="badge-total">${l.total}</span></td>
+      <td>${grandTotal ? (l.total/grandTotal*100).toFixed(1)+'%' : '0%'}</td>
+    </tr>`).join('') +
+    `<tr>
+      <td>GRAND TOTAL</td>
+      <td><span class="badge-gok">${lvlTotGok}</span></td>
+      <td><span class="badge-private">${lvlTotPriv}</span></td>
+      <td><span class="badge-faith">${lvlTotFaith}</span></td>
+      <td><span class="badge-total">${grandTotal}</span></td>
+      <td>100%</td>
+    </tr>`;
+
+  /* ── COUNTY: horizontal stacked bar (top 20) ── */
+  const top20 = byCounty.slice(0, 20);
+  const countyChartHeight = Math.max(280, top20.length * 22);
+  document.getElementById('allCountyChart').parentElement.style.height = countyChartHeight + 'px';
+  destroyAChart('allCounty');
+  aCharts.allCounty = new Chart(document.getElementById('allCountyChart'), {
+    type: 'bar',
+    data: {
+      labels: top20.map(c => c.county),
+      datasets: [
+        { label:'GOK',         data:top20.map(c=>c.gok),     backgroundColor:GOK_COLOR,   borderRadius:2 },
+        { label:'Private',     data:top20.map(c=>c.private), backgroundColor:PRIV_COLOR,  borderRadius:2 },
+        { label:'Faith Based', data:top20.map(c=>c.faith),   backgroundColor:FAITH_COLOR, borderRadius:2 },
+        { label:'Other',       data:top20.map(c=>c.other),   backgroundColor:'#6366f1',   borderRadius:2 }
+      ]
+    },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:10}, color:'#0f2a52' } } },
+      scales:{ x:{ stacked:true, beginAtZero:true, ticks:{color:'#6b8cba'}, grid:{color:'rgba(208,224,247,0.5)'} },
+               y:{ stacked:true, ticks:{color:'#0f2a52',font:{size:10}}, grid:{display:false} } } }
+  });
+
+  /* ── COUNTY: full ranked table ── */
+  document.getElementById('countyFullTableBody').innerHTML =
+    byCounty.map((c,i) => `<tr>
+      <td style="color:var(--muted);font-weight:600">${i+1}</td>
+      <td style="font-weight:500">${c.county}</td>
+      <td><span class="badge-gok">${c.gok}</span></td>
+      <td><span class="badge-private">${c.private}</span></td>
+      <td><span class="badge-faith">${c.faith}</span></td>
+      <td><span class="badge-total">${c.total}</span></td>
+      <td>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%"></div></div>
+          <span class="progress-pct">${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%</span>
+        </div>
+      </td>
+    </tr>`).join('') +
+    `<tr>
+      <td></td>
+      <td>GRAND TOTAL</td>
+      <td><span class="badge-gok">${byCounty.reduce((s,c)=>s+c.gok,0)}</span></td>
+      <td><span class="badge-private">${byCounty.reduce((s,c)=>s+c.private,0)}</span></td>
+      <td><span class="badge-faith">${byCounty.reduce((s,c)=>s+c.faith,0)}</span></td>
+      <td><span class="badge-total">${grandTotal}</span></td>
+      <td><span class="progress-pct">100%</span></td>
+    </tr>`;
+}
+
+
+/* ============================================================
+   MAIN DASHBOARD LOGIC (unchanged)
+   ============================================================ */
 const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTspwnQQtlpmk59QD_H50sMF7WKHsgdFxTI9K4QcBFYJ8K4-YB8WIZnZbEImE7dj7M2yPtcDCm2M9IJ/pub?output=csv';
 
 const isLocalhost = ['localhost','127.0.0.1',''].includes(window.location.hostname);
@@ -729,41 +1150,24 @@ function showError(msg) {
 
 function populateOwnershipFilter() {
   const counts={};
-  filteredData.forEach(r=>{ 
-    const o=normalizeOwnership(getVal(r,'ownership')); 
-    counts[o]=(counts[o]||0)+1; 
-  });
+  filteredData.forEach(r=>{ const o=normalizeOwnership(getVal(r,'ownership')); counts[o]=(counts[o]||0)+1; });
   const sel=document.getElementById('ownershipFilter');
   const cur=sel.value;
   sel.innerHTML='<option value="">All Facilities</option>';
   ['Government (GOK/County)','Private','Faith Based','Other'].forEach(o=>{
     if (counts[o]) sel.innerHTML+=`<option value="${o}">${o} (${counts[o]})</option>`;
   });
-  if (cur && !counts[cur]) {
-    sel.value = '';
-    activeOwnershipFilter = '';
-  } else if (cur) {
-    sel.value = cur;
-  }
+  if (cur && !counts[cur]) { sel.value=''; activeOwnershipFilter=''; } else if (cur) { sel.value=cur; }
 }
 
 function populateLevelFilter() {
   const counts={};
-  filteredData.forEach(r=>{ 
-    const l=(getVal(r,'level')||'').trim().toUpperCase(); 
-    if(l) counts[l]=(counts[l]||0)+1; 
-  });
+  filteredData.forEach(r=>{ const l=(getVal(r,'level')||'').trim().toUpperCase(); if(l) counts[l]=(counts[l]||0)+1; });
   const sel=document.getElementById('levelFilter');
   const cur=sel.value;
   sel.innerHTML='<option value="">All Levels</option>';
-  Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0]))
-    .forEach(([l,n])=>{ sel.innerHTML+=`<option value="${l}">${l} (${n})</option>`; });
-  if (cur && !counts[cur]) {
-    sel.value = '';
-    activeLevelFilter = '';
-  } else if (cur) {
-    sel.value = cur;
-  }
+  Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([l,n])=>{ sel.innerHTML+=`<option value="${l}">${l} (${n})</option>`; });
+  if (cur && !counts[cur]) { sel.value=''; activeLevelFilter=''; } else if (cur) { sel.value=cur; }
 }
 
 function applyQuickPick(el,v) {
@@ -800,17 +1204,17 @@ function applyFilter() {
   const from=document.getElementById('fromDate').value;
   const to=document.getElementById('toDate').value;
   const tsCol=columnMap.timestamp;
-  
+
   filteredData=allData.filter(r=>{
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;
     if (to   && d>new Date(to+'T23:59:59')) return false;
     return true;
   });
-  
+
   populateOwnershipFilter();
   populateLevelFilter();
-  
+
   filteredData=allData.filter(r=>{
     const d=parseDate(r[tsCol]);
     if (from && d<new Date(from)) return false;
@@ -820,7 +1224,7 @@ function applyFilter() {
     if (activeFacilitySearch  && !getVal(r,'facility').toLowerCase().includes(activeFacilitySearch)) return false;
     return true;
   });
-  
+
   processData();
 }
 

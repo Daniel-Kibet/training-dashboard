@@ -13,19 +13,15 @@
         :root {
             --primary: #0ea5e9;
             --primary-dark: #0284c7;
-            --primary-light: #38bdf8;
             --secondary: #8b5cf6;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --dark: #1e293b;
             --gray: #64748b;
-            --light-gray: #f1f5f9;
+            --light: #f8fafc;
             --white: #ffffff;
             --border: #e2e8f0;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --radius: 12px;
         }
 
         * {
@@ -36,20 +32,16 @@
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: var(--white);
             color: var(--dark);
+            min-height: 100vh;
         }
 
         /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
 
         .header-content {
@@ -68,30 +60,29 @@
         }
 
         .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: var(--shadow-lg);
+            font-size: 1.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .logo-text h1 {
             font-family: 'Syne', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: white;
             margin: 0;
         }
 
         .logo-text p {
             font-size: 0.875rem;
-            color: var(--gray);
+            color: rgba(255, 255, 255, 0.9);
             margin: 0;
         }
 
@@ -106,12 +97,13 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: #ecfdf5;
-            border: 1px solid #10b981;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
             font-size: 0.875rem;
             font-weight: 600;
-            color: #059669;
+            color: white;
         }
 
         .status-dot {
@@ -129,7 +121,7 @@
 
         .btn {
             padding: 0.625rem 1.25rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
@@ -141,40 +133,53 @@
             font-family: 'DM Sans', sans-serif;
         }
 
+        .btn-white {
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
 
         .btn-secondary {
             background: white;
             color: var(--dark);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: var(--light-gray);
+            background: var(--light);
+            border-color: var(--primary);
         }
 
-        /* Main Container */
+        /* Container */
         .container {
             max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem 2rem;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        /* Filter Section - Beautiful Card */
+        /* Filter Card */
         .filter-card {
             background: white;
-            border-radius: var(--radius);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
             margin-bottom: 2rem;
         }
 
@@ -184,7 +189,7 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--light-gray);
+            border-bottom: 2px solid var(--light);
         }
 
         .filter-title {
@@ -220,7 +225,7 @@
         .select-field {
             padding: 0.75rem 1rem;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 0.875rem;
             font-family: 'DM Sans', sans-serif;
             transition: all 0.2s;
@@ -250,16 +255,13 @@
 
         .stat-card {
             background: white;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-lg);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
             position: relative;
             overflow: hidden;
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
+            transition: all 0.3s;
         }
 
         .stat-card::before {
@@ -276,6 +278,28 @@
         .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
         .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
         .stat-card:nth-child(5)::before { background: linear-gradient(90deg, #fa709a, #fee140); }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #667eea20, #764ba220); }
+        .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #f093fb20, #f5576c20); }
+        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #4facfe20, #00f2fe20); }
+        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #43e97b20, #38f9d720); }
+        .stat-card:nth-child(5) .stat-icon { background: linear-gradient(135deg, #fa709a20, #fee14020); }
 
         .stat-value {
             font-family: 'Syne', sans-serif;
@@ -302,9 +326,10 @@
 
         .chart-card {
             background: white;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-lg);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
         }
 
         .chart-title {
@@ -314,7 +339,7 @@
             color: var(--dark);
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--light-gray);
+            border-bottom: 2px solid var(--light);
         }
 
         .chart-container {
@@ -325,9 +350,10 @@
         /* Table */
         .table-card {
             background: white;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-lg);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
         }
 
         .table-header {
@@ -336,7 +362,7 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--light-gray);
+            border-bottom: 2px solid var(--light);
         }
 
         .table-title {
@@ -346,6 +372,12 @@
             color: var(--dark);
         }
 
+        .table-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+
         .table-controls {
             display: flex;
             gap: 0.5rem;
@@ -353,17 +385,18 @@
 
         .table-control-btn {
             padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             background: white;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .table-control-btn:hover {
-            background: var(--light-gray);
+            background: var(--light);
+            border-color: var(--primary);
         }
 
         .table-control-btn.active {
@@ -374,7 +407,7 @@
 
         .table-wrapper {
             overflow-x: auto;
-            border-radius: 8px;
+            border-radius: 12px;
             border: 1px solid var(--border);
         }
 
@@ -405,12 +438,16 @@
         }
 
         tbody tr:hover {
-            background: var(--light-gray);
+            background: var(--light);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
         }
 
         .badge {
             padding: 0.375rem 0.75rem;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
@@ -425,7 +462,7 @@
         .loading-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: white;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -436,8 +473,8 @@
         .spinner {
             width: 60px;
             height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -450,24 +487,24 @@
             margin-top: 1.5rem;
             font-size: 1.5rem;
             font-weight: 700;
-            color: white;
+            color: var(--dark);
         }
 
         .loading-subtext {
             margin-top: 0.5rem;
             font-size: 1rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--gray);
         }
 
         .hidden { display: none !important; }
 
         @media (max-width: 768px) {
-            .container { padding: 0 1rem 1rem; }
+            .container { padding: 1rem; }
             .filter-grid { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
             .header-content { flex-direction: column; align-items: flex-start; }
-            .stat-value { font-size: 2rem; }
+            .header-actions { width: 100%; flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -491,23 +528,23 @@
                 <div class="header-actions">
                     <div class="status-badge">
                         <div class="status-dot"></div>
-                        <span id="statusText">Live</span>
+                        <span id="statusText">Live • <span id="recordCount">0</span> Records</span>
                     </div>
-                    <span style="font-size: 0.875rem; color: var(--gray);" id="lastUpdated"></span>
-                    <button class="btn btn-secondary" onclick="refreshData()">
+                    <span style="font-size: 0.875rem; color: rgba(255,255,255,0.9);" id="lastUpdated"></span>
+                    <button class="btn btn-white" onclick="refreshData()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="23 4 23 10 17 10"/>
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
                         </svg>
                         Refresh
                     </button>
-                    <button class="btn btn-primary" onclick="exportData()">
+                    <button class="btn btn-white" onclick="exportData()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        Export to Excel
+                        Export
                     </button>
                 </div>
             </div>
@@ -521,11 +558,21 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                         </svg>
-                        Filters
+                        Filter Data
                     </h2>
                 </div>
 
                 <div class="filter-grid">
+                    <div class="input-group">
+                        <label class="input-label">From Date</label>
+                        <input type="date" class="input-field" id="fromDate">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">To Date</label>
+                        <input type="date" class="input-field" id="toDate">
+                    </div>
+
                     <div class="input-group">
                         <label class="input-label">Month</label>
                         <select class="select-field" id="monthFilter">
@@ -575,7 +622,7 @@
                             <polyline points="1 4 1 10 7 10"/>
                             <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
                         </svg>
-                        Reset
+                        Reset Filters
                     </button>
                     <button class="btn btn-primary" onclick="applyFilters()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -589,22 +636,27 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
+                    <div class="stat-icon">📊</div>
                     <div class="stat-value" id="totalRegistrations">0</div>
                     <div class="stat-label">Total Registrations</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">🌅</div>
                     <div class="stat-value" id="todayRegistrations">0</div>
                     <div class="stat-label">Today's Registrations</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">📅</div>
                     <div class="stat-value" id="weekRegistrations">0</div>
                     <div class="stat-label">This Week</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">🗺️</div>
                     <div class="stat-value" id="countiesCount">0</div>
                     <div class="stat-label">Counties Covered</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon">🏥</div>
                     <div class="stat-value" id="facilityTypes">0</div>
                     <div class="stat-label">Facility Types</div>
                 </div>
@@ -645,8 +697,8 @@
             <div class="table-card">
                 <div class="table-header">
                     <div>
-                        <h3 class="table-title">Recent Registrations</h3>
-                        <p style="font-size: 0.875rem; color: var(--gray); margin-top: 0.25rem;" id="tableSubtitle"></p>
+                        <h3 class="table-title">Recent Registrations (Filtered)</h3>
+                        <p class="table-subtitle" id="tableSubtitle">Showing filtered data based on selected criteria</p>
                     </div>
                     <div class="table-controls">
                         <button class="table-control-btn" onclick="setTableLimit(25)">25</button>
@@ -716,10 +768,11 @@
                 await loadData();
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('recordCount').textContent = allData.length.toLocaleString();
                 updateTimestamp();
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('loadingStatus').innerHTML = `<div style="color: white; margin-top: 1rem;">Error: ${error.message}</div>`;
+                document.getElementById('loadingStatus').innerHTML = `<div style="color: #ef4444; margin-top: 1rem;">Error: ${error.message}</div>`;
             }
         }
 
@@ -733,7 +786,7 @@
 
             for (let i=0; i<urls.length; i++) {
                 try {
-                    document.getElementById('loadingStatus').textContent = `Trying method ${i+1}/${urls.length}...`;
+                    document.getElementById('loadingStatus').textContent = `Loading data (method ${i+1}/${urls.length})...`;
                     const rsp = await fetch(urls[i],{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
                     if (!rsp.ok) throw new Error(`HTTP ${rsp.status}`);
 
@@ -802,7 +855,7 @@
             const months = new Set();
             const years = new Set();
 
-            filteredData.forEach(row => {
+            allData.forEach(row => {
                 const county = getColumnValue(row, 'county');
                 const ownership = getColumnValue(row, 'ownership');
                 const level = getColumnValue(row, 'level');
@@ -828,14 +881,12 @@
             populateSelect('levelFilter', Array.from(levels).sort());
             populateSelect('roleFilter', Array.from(roles).sort());
             
-            // Populate months
             const monthSelect = document.getElementById('monthFilter');
             monthSelect.innerHTML = '<option value="">All Months</option>';
             Array.from(months).sort((a, b) => a - b).forEach(m => {
                 monthSelect.innerHTML += `<option value="${m}">${MONTHS[m]}</option>`;
             });
 
-            // Populate years
             const yearSelect = document.getElementById('yearFilter');
             yearSelect.innerHTML = '<option value="">All Years</option>';
             Array.from(years).sort((a, b) => b - a).forEach(y => {
@@ -857,6 +908,8 @@
         }
 
         function applyFilters() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
             const month = document.getElementById('monthFilter').value;
             const year = document.getElementById('yearFilter').value;
             const county = document.getElementById('countyFilter').value;
@@ -865,16 +918,27 @@
             const role = document.getElementById('roleFilter').value;
 
             filteredData = allData.filter(row => {
-                if (month !== '' || year !== '') {
-                    try {
-                        const date = new Date(getColumnValue(row, 'timestamp'));
-                        if (!isNaN(date.getTime())) {
-                            if (month !== '' && date.getMonth() !== parseInt(month)) return false;
-                            if (year !== '' && date.getFullYear() !== parseInt(year)) return false;
-                        }
-                    } catch(e) {
-                        return false;
+                const timestamp = getColumnValue(row, 'timestamp');
+                
+                try {
+                    const date = new Date(timestamp);
+                    if (isNaN(date.getTime())) return false;
+
+                    if (fromDate) {
+                        const from = new Date(fromDate);
+                        if (date < from) return false;
                     }
+
+                    if (toDate) {
+                        const to = new Date(toDate);
+                        to.setHours(23, 59, 59, 999);
+                        if (date > to) return false;
+                    }
+
+                    if (month !== '' && date.getMonth() !== parseInt(month)) return false;
+                    if (year !== '' && date.getFullYear() !== parseInt(year)) return false;
+                } catch(e) {
+                    return false;
                 }
 
                 if (county && getColumnValue(row, 'county') !== county) return false;
@@ -889,6 +953,8 @@
         }
 
         function resetFilters() {
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
             document.getElementById('monthFilter').value = '';
             document.getElementById('yearFilter').value = '';
             document.getElementById('countyFilter').value = '';
@@ -970,8 +1036,8 @@
                     datasets: [{
                         label: 'Registrations',
                         data: data,
-                        borderColor: '#0ea5e9',
-                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
                         tension: 0.4,
                         fill: true,
                         borderWidth: 3
@@ -982,7 +1048,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        y: { beginAtZero: true, grid: { color: '#f8fafc' } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -1007,7 +1073,7 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ['#0ea5e9','#8b5cf6','#10b981','#f59e0b','#ef4444']
+                        backgroundColor: ['#667eea','#8b5cf6','#10b981','#f59e0b','#ef4444']
                     }]
                 },
                 options: {
@@ -1037,7 +1103,7 @@
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{ label: 'Registrations', data: data, backgroundColor: '#8b5cf6' }]
+                    datasets: [{ label: 'Registrations', data: data, backgroundColor: '#764ba2' }]
                 },
                 options: {
                     indexAxis: 'y',
@@ -1045,7 +1111,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { beginAtZero: true, grid: { color: '#f8fafc' } },
                         y: { grid: { display: false } }
                     }
                 }
@@ -1075,7 +1141,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        y: { beginAtZero: true, grid: { color: '#f8fafc' } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -1086,7 +1152,6 @@
             const tbody = document.getElementById('tableBody');
             const limit = tableLimit === 'all' ? filteredData.length : parseInt(tableLimit);
             
-            // Sort by date descending and take the limit
             const sortedData = [...filteredData].sort((a, b) => {
                 try {
                     const dateA = new Date(getColumnValue(a, 'timestamp'));
@@ -1108,7 +1173,7 @@
 
                 return `
                     <tr>
-                        <td>${formatDate(getColumnValue(row, 'timestamp'))}</td>
+                        <td style="color: var(--gray);">${formatDate(getColumnValue(row, 'timestamp'))}</td>
                         <td style="font-weight: 600;">${getColumnValue(row, 'name') || '-'}</td>
                         <td style="color: var(--gray);">${getColumnValue(row, 'email') || '-'}</td>
                         <td>${getColumnValue(row, 'county') || '-'}</td>
@@ -1121,9 +1186,9 @@
             }).join('');
 
             document.getElementById('tableFooter').textContent = 
-                `Showing ${displayData.length} of ${filteredData.length} registrations`;
+                `Showing ${displayData.length} of ${filteredData.length} filtered registrations`;
             document.getElementById('tableSubtitle').textContent = 
-                `Based on current filter selection`;
+                `Displaying ${filteredData.length} filtered records from ${allData.length} total`;
         }
 
         function setTableLimit(limit) {
@@ -1137,7 +1202,7 @@
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(filteredData);
             XLSX.utils.book_append_sheet(wb, ws, 'Training Data');
-            XLSX.writeFile(wb, `training_data_${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.writeFile(wb, `training_data_filtered_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         function destroyChart(chartId) {

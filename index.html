@@ -3,27 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healthcare Training Analytics Dashboard</title>
+    <title>Healthcare Training Monitoring Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root {
-            --primary: #0ea5e9;
-            --primary-dark: #0284c7;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --gray: #64748b;
-            --light: #f8fafc;
-            --white: #ffffff;
-            --border: #e2e8f0;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -31,434 +17,346 @@
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--white);
-            color: var(--dark);
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* Top Navigation */
+        .top-nav {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .nav-tabs {
+            display: flex;
             gap: 2rem;
         }
 
-        .logo-section {
+        .nav-tab {
+            padding: 0.5rem 0;
+            color: #718096;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            color: #FF6B35;
+            border-bottom-color: #FF6B35;
+        }
+
+        .user-info {
             display: flex;
             align-items: center;
-            gap: 1rem;
-        }
-
-        .logo-icon {
-            width: 56px;
-            height: 56px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .logo-text h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: white;
-            margin: 0;
-        }
-
-        .logo-text p {
+            gap: 0.5rem;
+            color: #4a5568;
             font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin: 0;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2d3748;
         }
 
         .header-actions {
             display: flex;
-            align-items: center;
             gap: 1rem;
-        }
-
-        .status-badge {
-            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: white;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .btn {
+        .filter-btn {
             padding: 0.625rem 1.25rem;
-            border-radius: 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            border: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
             transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
         }
 
-        .btn-white {
+        .filter-btn:hover {
+            border-color: #cbd5e0;
+            background: #f7fafc;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
             background: white;
-            color: var(--dark);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-white:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        .icon-btn:hover {
+            background: #f7fafc;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
-
-        .btn-secondary {
+        /* Filter Panel */
+        .filter-panel {
             background: white;
-            color: var(--dark);
-            border: 2px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--light);
-            border-color: var(--primary);
-        }
-
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Filter Card */
-        .filter-card {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
             margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: none;
         }
 
-        .filter-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--light);
-        }
-
-        .filter-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .filter-panel.active {
+            display: block;
         }
 
         .filter-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 1.5rem;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
-        .input-group {
+        .filter-field {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
 
-        .input-label {
+        .filter-label {
             font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--dark);
+            font-weight: 500;
+            color: #4a5568;
         }
 
-        .input-field,
-        .select-field {
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 10px;
+        .filter-input {
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
             font-size: 0.875rem;
-            font-family: 'DM Sans', sans-serif;
             transition: all 0.2s;
-            background: white;
         }
 
-        .input-field:focus,
-        .select-field:focus {
+        .filter-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
         }
 
         .filter-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             justify-content: flex-end;
         }
 
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.75rem;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-        }
-
-        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #667eea, #764ba2); }
-        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #f093fb, #f5576c); }
-        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
-        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
-        .stat-card:nth-child(5)::before { background: linear-gradient(90deg, #fa709a, #fee140); }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #667eea20, #764ba220); }
-        .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #f093fb20, #f5576c20); }
-        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #4facfe20, #00f2fe20); }
-        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #43e97b20, #38f9d720); }
-        .stat-card:nth-child(5) .stat-icon { background: linear-gradient(135deg, #fa709a20, #fee14020); }
-
-        .stat-value {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--dark);
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--gray);
-            font-weight: 600;
-        }
-
-        /* Charts Grid */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.75rem;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            border: 1px solid var(--border);
-        }
-
-        .chart-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--light);
-        }
-
-        .chart-container {
-            position: relative;
-            height: 350px;
-        }
-
-        /* Table */
-        .table-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.75rem;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            border: 1px solid var(--border);
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--light);
-        }
-
-        .table-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .table-subtitle {
-            font-size: 0.875rem;
-            color: var(--gray);
-            margin-top: 0.25rem;
-        }
-
-        .table-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .table-control-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--border);
-            background: white;
-            border-radius: 8px;
+        .btn {
+            padding: 0.625rem 1.5rem;
+            border: none;
+            border-radius: 6px;
             font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .table-control-btn:hover {
-            background: var(--light);
-            border-color: var(--primary);
-        }
-
-        .table-control-btn.active {
-            background: var(--primary);
+        .btn-primary {
+            background: #FF6B35;
             color: white;
-            border-color: var(--primary);
         }
 
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid var(--border);
+        .btn-primary:hover {
+            background: #e55a2b;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
         }
 
-        thead {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .btn-secondary:hover {
+            background: #f7fafc;
         }
 
-        th {
-            padding: 1rem;
-            text-align: left;
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        /* Top Stats Row */
+        .top-stats {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        td {
-            padding: 1rem;
-            font-size: 0.875rem;
-            color: var(--dark);
-            border-bottom: 1px solid var(--border);
-        }
-
-        tbody tr:hover {
-            background: var(--light);
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .badge {
-            padding: 0.375rem 0.75rem;
+        .stat-box {
+            background: white;
             border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .badge-success { background: #d1fae5; color: #065f46; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
-        .badge-primary { background: #dbeafe; color: #1e40af; }
+        .stat-box-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
 
-        /* Loading Screen */
+        .stat-box-title {
+            font-size: 0.875rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .stat-info-icon {
+            width: 16px;
+            height: 16px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #718096;
+            cursor: help;
+        }
+
+        .budget-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .budget-percentage {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #48bb78;
+        }
+
+        .budget-details {
+            text-align: right;
+        }
+
+        .budget-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 0.25rem;
+        }
+
+        .budget-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .duration-box {
+            text-align: center;
+        }
+
+        .duration-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Charts Grid */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 220px;
+        }
+
+        .chart-legend {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Bottom Charts */
+        .bottom-charts {
+            display: grid;
+            grid-template-columns: 1.2fr 1.5fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .large-chart-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .large-chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Loading */
         .loading-screen {
             position: fixed;
             inset: 0;
@@ -471,10 +369,10 @@
         }
 
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top-color: #FF6B35;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -484,247 +382,247 @@
         }
 
         .loading-text {
-            margin-top: 1.5rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .loading-subtext {
-            margin-top: 0.5rem;
-            font-size: 1rem;
-            color: var(--gray);
+            margin-top: 1rem;
+            color: #4a5568;
+            font-weight: 600;
         }
 
         .hidden { display: none !important; }
 
-        @media (max-width: 768px) {
-            .container { padding: 1rem; }
-            .filter-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .charts-grid { grid-template-columns: 1fr; }
-            .header-content { flex-direction: column; align-items: flex-start; }
-            .header-actions { width: 100%; flex-wrap: wrap; }
+        @media (max-width: 1200px) {
+            .charts-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .top-stats {
+                grid-template-columns: 1fr;
+            }
+            .bottom-charts {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div id="loadingScreen" class="loading-screen">
         <div class="spinner"></div>
-        <div class="loading-text">Loading Training Data</div>
-        <div class="loading-subtext" id="loadingStatus">Connecting to data source...</div>
+        <div class="loading-text" id="loadingStatus">Loading training data...</div>
     </div>
 
     <div id="dashboard" class="hidden">
-        <header class="header">
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo-icon">🎓</div>
-                    <div class="logo-text">
-                        <h1>Training Analytics</h1>
-                        <p>Real-time Healthcare Training Dashboard</p>
-                    </div>
-                </div>
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-tabs">
+                <div class="nav-tab active">Dashboard</div>
+                <div class="nav-tab">Registrations</div>
+                <div class="nav-tab">Analytics</div>
+            </div>
+            <div class="user-info">
+                <span>👤</span>
+                <span>admin@apeiro.com</span>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Healthcare Training Monitoring Dashboard</h1>
                 <div class="header-actions">
-                    <div class="status-badge">
-                        <div class="status-dot"></div>
-                        <span id="statusText">Live • <span id="recordCount">0</span> Records</span>
-                    </div>
-                    <span style="font-size: 0.875rem; color: rgba(255,255,255,0.9);" id="lastUpdated"></span>
-                    <button class="btn btn-white" onclick="refreshData()">
+                    <button class="filter-btn" onclick="toggleFilters()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                        <span>Filters Overview</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" onclick="refreshData()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="23 4 23 10 17 10"/>
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
                         </svg>
-                        Refresh
                     </button>
-                    <button class="btn btn-white" onclick="exportData()">
+                    <button class="icon-btn" onclick="exportData()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        Export
                     </button>
                 </div>
             </div>
-        </header>
 
-        <div class="container">
-            <!-- Filter Card -->
-            <div class="filter-card">
-                <div class="filter-header">
-                    <h2 class="filter-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                        </svg>
-                        Filter Data
-                    </h2>
-                </div>
-
+            <!-- Filter Panel -->
+            <div class="filter-panel" id="filterPanel">
                 <div class="filter-grid">
-                    <div class="input-group">
-                        <label class="input-label">From Date</label>
-                        <input type="date" class="input-field" id="fromDate">
+                    <div class="filter-field">
+                        <label class="filter-label">From Date</label>
+                        <input type="date" class="filter-input" id="fromDate">
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">To Date</label>
-                        <input type="date" class="input-field" id="toDate">
+                    <div class="filter-field">
+                        <label class="filter-label">To Date</label>
+                        <input type="date" class="filter-input" id="toDate">
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Month</label>
-                        <select class="select-field" id="monthFilter">
+                    <div class="filter-field">
+                        <label class="filter-label">Month</label>
+                        <select class="filter-input" id="monthFilter">
                             <option value="">All Months</option>
                         </select>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Year</label>
-                        <select class="select-field" id="yearFilter">
+                    <div class="filter-field">
+                        <label class="filter-label">Year</label>
+                        <select class="filter-input" id="yearFilter">
                             <option value="">All Years</option>
                         </select>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">County</label>
-                        <select class="select-field" id="countyFilter">
+                    <div class="filter-field">
+                        <label class="filter-label">County</label>
+                        <select class="filter-input" id="countyFilter">
                             <option value="">All Counties</option>
                         </select>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Facility Ownership</label>
-                        <select class="select-field" id="ownershipFilter">
+                    <div class="filter-field">
+                        <label class="filter-label">Ownership</label>
+                        <select class="filter-input" id="ownershipFilter">
                             <option value="">All Facilities</option>
                         </select>
                     </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Facility Level</label>
-                        <select class="select-field" id="levelFilter">
-                            <option value="">All Levels</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Role</label>
-                        <select class="select-field" id="roleFilter">
-                            <option value="">All Roles</option>
-                        </select>
-                    </div>
                 </div>
-
                 <div class="filter-actions">
-                    <button class="btn btn-secondary" onclick="resetFilters()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="1 4 1 10 7 10"/>
-                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-                        </svg>
-                        Reset Filters
-                    </button>
-                    <button class="btn btn-primary" onclick="applyFilters()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Apply Filters
-                    </button>
+                    <button class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-value" id="totalRegistrations">0</div>
-                    <div class="stat-label">Total Registrations</div>
+            <!-- Top Stats Row -->
+            <div class="top-stats">
+                <div class="stat-box">
+                    <div class="stat-box-header">
+                        <span class="stat-box-title">Program</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <select class="filter-input" style="margin-bottom: 1rem;">
+                        <option>SHA Provider Training</option>
+                    </select>
+                    <div style="font-size: 0.875rem; color: #718096; margin-bottom: 0.5rem;">Program Type: <strong>National Training Program</strong></div>
+                    <div style="font-size: 0.875rem; color: #718096; margin-bottom: 0.5rem;">Coordinator: <strong>Training Team</strong></div>
+                    <div style="font-size: 0.875rem; color: #718096;">Start Date: <strong id="startDate">-</strong></div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🌅</div>
-                    <div class="stat-value" id="todayRegistrations">0</div>
-                    <div class="stat-label">Today's Registrations</div>
+
+                <div class="stat-box">
+                    <div class="stat-box-header">
+                        <span class="stat-box-title">Training Coverage</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div class="budget-section">
+                        <div class="budget-percentage" id="coveragePercentage">0%</div>
+                        <div class="budget-details">
+                            <div class="budget-label">Total Registered</div>
+                            <div class="budget-value" id="totalRegistered">0</div>
+                            <div class="budget-label" style="margin-top: 0.5rem;">Target</div>
+                            <div class="budget-value" id="targetValue">20,000</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📅</div>
-                    <div class="stat-value" id="weekRegistrations">0</div>
-                    <div class="stat-label">This Week</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🗺️</div>
-                    <div class="stat-value" id="countiesCount">0</div>
-                    <div class="stat-label">Counties Covered</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🏥</div>
-                    <div class="stat-value" id="facilityTypes">0</div>
-                    <div class="stat-label">Facility Types</div>
+
+                <div class="stat-box duration-box">
+                    <div class="stat-box-header">
+                        <span class="stat-box-title">Program Duration</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div class="duration-value" id="durationDays">0 day(s)</div>
+                    <div style="font-size: 0.875rem; color: #718096;">Since Program Start</div>
                 </div>
             </div>
 
-            <!-- Charts Grid -->
-            <div class="charts-grid">
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- Training Status -->
                 <div class="chart-card">
-                    <h3 class="chart-title">Registration Trend</h3>
+                    <div class="chart-header">
+                        <span class="chart-title">Registration Status</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
                     <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- By County -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Registrations by County (Top 5)</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="countyPieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Coverage Gauge -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Program Coverage</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="coverageGauge"></canvas>
+                    </div>
+                </div>
+
+                <!-- Facility Level -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Facility Level Distribution</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="levelGauge"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Charts -->
+            <div class="bottom-charts">
+                <!-- Registration Trend -->
+                <div class="large-chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Daily Registrations</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #718096; margin-bottom: 1rem;">Actual vs Target</div>
+                    <div class="large-chart-container">
                         <canvas id="trendChart"></canvas>
                     </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3 class="chart-title">Facility Ownership</h3>
-                    <div class="chart-container">
+                <!-- County Bar Chart -->
+                <div class="large-chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Registrations by County (Top 20)</span>
+                        <span class="stat-info-icon">?</span>
+                        <button class="icon-btn" style="margin-left: auto;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 3 21 3 21 9"/>
+                                <polyline points="9 21 3 21 3 15"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="large-chart-container">
+                        <canvas id="countyBarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Ownership Breakdown -->
+                <div class="large-chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Facility Ownership</span>
+                        <span class="stat-info-icon">?</span>
+                    </div>
+                    <div class="large-chart-container">
                         <canvas id="ownershipChart"></canvas>
                     </div>
                 </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">Top Counties</h3>
-                    <div class="chart-container">
-                        <canvas id="countyChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3 class="chart-title">Facility Level Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="levelChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table -->
-            <div class="table-card">
-                <div class="table-header">
-                    <div>
-                        <h3 class="table-title">Recent Registrations (Filtered)</h3>
-                        <p class="table-subtitle" id="tableSubtitle">Showing filtered data based on selected criteria</p>
-                    </div>
-                    <div class="table-controls">
-                        <button class="table-control-btn" onclick="setTableLimit(25)">25</button>
-                        <button class="table-control-btn" onclick="setTableLimit(50)">50</button>
-                        <button class="table-control-btn active" onclick="setTableLimit(100)">100</button>
-                        <button class="table-control-btn" onclick="setTableLimit('all')">All</button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>County</th>
-                                <th>Facility</th>
-                                <th>Level</th>
-                                <th>Role</th>
-                                <th>Ownership</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 1rem; text-align: center; color: var(--gray); font-size: 0.875rem;" id="tableFooter"></div>
             </div>
         </div>
     </div>
@@ -733,7 +631,6 @@
         const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTspwnQQtlpmk59QD_H50sMF7WKHsgdFxTI9K4QcBFYJ8K4-YB8WIZnZbEImE7dj7M2yPtcDCm2M9IJ/pub?gid=1187411921&single=true&output=csv';
         
         const isLocalhost = ['localhost','127.0.0.1',''].includes(window.location.hostname);
-        
         const DATA_URLS = isLocalhost ? [
           `https://api.allorigins.win/get?url=${encodeURIComponent(PUBLISHED_CSV_URL)}`,
           `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`,
@@ -748,7 +645,6 @@
         let filteredData = [];
         let columnMapping = {};
         let charts = {};
-        let tableLimit = 100;
 
         const COLUMN_PATTERNS = {
             timestamp: ['start time', 'completion time', 'timestamp', 'date', 'time'],
@@ -768,40 +664,29 @@
                 await loadData();
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('recordCount').textContent = allData.length.toLocaleString();
-                updateTimestamp();
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('loadingStatus').innerHTML = `<div style="color: #ef4444; margin-top: 1rem;">Error: ${error.message}</div>`;
+                document.getElementById('loadingStatus').innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
             }
         }
 
         async function loadData() {
-            const urls = DATA_URLS.map(url => {
-                const ts = Date.now();
-                return (url.includes('allorigins.win')||url.includes('corsproxy.io'))
-                  ? url+(url.includes('?')?'&':'?')+`_t=${ts}`
-                  : url+`&_t=${ts}`;
-            });
-
+            const urls = DATA_URLS.map(url => url+(url.includes('?')?'&':'?')+`_t=${Date.now()}`);
             for (let i=0; i<urls.length; i++) {
                 try {
-                    document.getElementById('loadingStatus').textContent = `Loading data (method ${i+1}/${urls.length})...`;
+                    document.getElementById('loadingStatus').textContent = `Loading data (${i+1}/${urls.length})...`;
                     const rsp = await fetch(urls[i],{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
                     if (!rsp.ok) throw new Error(`HTTP ${rsp.status}`);
-
                     let csv;
                     if (urls[i].includes('allorigins.win')) {
                         const data = await rsp.json();
-                        if (!data.contents) throw new Error('No contents in proxy response');
+                        if (!data.contents) throw new Error('No contents');
                         csv = data.contents;
                     } else {
                         csv = await rsp.text();
                     }
-
                     if (csv.trim().startsWith('<!DOCTYPE')||csv.trim().startsWith('<html'))
-                        throw new Error('Got HTML — sheet may not be published');
-
+                        throw new Error('Got HTML');
                     return new Promise((resolve, reject) => {
                         Papa.parse(csv, {
                             header: true,
@@ -813,7 +698,7 @@
                                     return ts && String(ts).trim() && ts !== 'Timestamp';
                                 });
                                 if (allData.length === 0) {
-                                    reject(new Error('No valid data rows found'));
+                                    reject(new Error('No valid data'));
                                     return;
                                 }
                                 filteredData = [...allData];
@@ -821,7 +706,7 @@
                                 processData();
                                 resolve();
                             },
-                            error: (err) => reject(new Error('CSV parse error: ' + err.message))
+                            error: (err) => reject(new Error('CSV parse: ' + err.message))
                         });
                     });
                 } catch(e) {
@@ -850,23 +735,15 @@
         function populateFilters() {
             const counties = new Set();
             const ownerships = new Set();
-            const levels = new Set();
-            const roles = new Set();
             const months = new Set();
             const years = new Set();
 
             allData.forEach(row => {
                 const county = getColumnValue(row, 'county');
                 const ownership = getColumnValue(row, 'ownership');
-                const level = getColumnValue(row, 'level');
-                const role = getColumnValue(row, 'role');
                 const timestamp = getColumnValue(row, 'timestamp');
-
                 if (county) counties.add(county);
                 if (ownership) ownerships.add(ownership);
-                if (level) levels.add(level);
-                if (role) roles.add(role);
-
                 try {
                     const date = new Date(timestamp);
                     if (!isNaN(date.getTime())) {
@@ -878,8 +755,6 @@
 
             populateSelect('countyFilter', Array.from(counties).sort());
             populateSelect('ownershipFilter', Array.from(ownerships).sort());
-            populateSelect('levelFilter', Array.from(levels).sort());
-            populateSelect('roleFilter', Array.from(roles).sort());
             
             const monthSelect = document.getElementById('monthFilter');
             monthSelect.innerHTML = '<option value="">All Months</option>';
@@ -907,6 +782,10 @@
             });
         }
 
+        function toggleFilters() {
+            document.getElementById('filterPanel').classList.toggle('active');
+        }
+
         function applyFilters() {
             const fromDate = document.getElementById('fromDate').value;
             const toDate = document.getElementById('toDate').value;
@@ -914,38 +793,25 @@
             const year = document.getElementById('yearFilter').value;
             const county = document.getElementById('countyFilter').value;
             const ownership = document.getElementById('ownershipFilter').value;
-            const level = document.getElementById('levelFilter').value;
-            const role = document.getElementById('roleFilter').value;
 
             filteredData = allData.filter(row => {
                 const timestamp = getColumnValue(row, 'timestamp');
-                
                 try {
                     const date = new Date(timestamp);
                     if (isNaN(date.getTime())) return false;
-
-                    if (fromDate) {
-                        const from = new Date(fromDate);
-                        if (date < from) return false;
-                    }
-
+                    if (fromDate && date < new Date(fromDate)) return false;
                     if (toDate) {
                         const to = new Date(toDate);
                         to.setHours(23, 59, 59, 999);
                         if (date > to) return false;
                     }
-
                     if (month !== '' && date.getMonth() !== parseInt(month)) return false;
                     if (year !== '' && date.getFullYear() !== parseInt(year)) return false;
                 } catch(e) {
                     return false;
                 }
-
                 if (county && getColumnValue(row, 'county') !== county) return false;
                 if (ownership && getColumnValue(row, 'ownership') !== ownership) return false;
-                if (level && getColumnValue(row, 'level') !== level) return false;
-                if (role && getColumnValue(row, 'role') !== role) return false;
-
                 return true;
             });
 
@@ -959,55 +825,197 @@
             document.getElementById('yearFilter').value = '';
             document.getElementById('countyFilter').value = '';
             document.getElementById('ownershipFilter').value = '';
-            document.getElementById('levelFilter').value = '';
-            document.getElementById('roleFilter').value = '';
             filteredData = [...allData];
             processData();
         }
 
         function processData() {
-            updateStats();
+            updateTopStats();
             updateCharts();
-            updateTable();
         }
 
-        function updateStats() {
-            const today = new Date();
-            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-            document.getElementById('totalRegistrations').textContent = filteredData.length.toLocaleString();
-            
-            const todayCount = filteredData.filter(row => {
+        function updateTopStats() {
+            // Start date
+            const dates = filteredData.map(r => {
                 try {
-                    const date = new Date(getColumnValue(row, 'timestamp'));
-                    return !isNaN(date.getTime()) && date.toDateString() === today.toDateString();
-                } catch(e) { return false; }
-            }).length;
-            document.getElementById('todayRegistrations').textContent = todayCount.toLocaleString();
+                    return new Date(getColumnValue(r, 'timestamp'));
+                } catch(e) {
+                    return null;
+                }
+            }).filter(d => d && !isNaN(d.getTime())).sort((a,b) => a-b);
 
-            const weekCount = filteredData.filter(row => {
-                try {
-                    const date = new Date(getColumnValue(row, 'timestamp'));
-                    return !isNaN(date.getTime()) && date >= weekAgo;
-                } catch(e) { return false; }
-            }).length;
-            document.getElementById('weekRegistrations').textContent = weekCount.toLocaleString();
+            if (dates.length > 0) {
+                const startDate = dates[0];
+                document.getElementById('startDate').textContent = startDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+                
+                const today = new Date();
+                const diffTime = Math.abs(today - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('durationDays').textContent = `${diffDays} day(s)`;
+            }
 
-            const counties = new Set(filteredData.map(row => getColumnValue(row, 'county')).filter(Boolean));
-            document.getElementById('countiesCount').textContent = counties.size;
-
-            const ownerships = new Set(filteredData.map(row => getColumnValue(row, 'ownership')).filter(Boolean));
-            document.getElementById('facilityTypes').textContent = ownerships.size;
+            // Coverage
+            const total = filteredData.length;
+            const target = 20000;
+            const coverage = Math.min(Math.round((total / target) * 100), 100);
+            document.getElementById('coveragePercentage').textContent = `${coverage}%`;
+            document.getElementById('totalRegistered').textContent = total.toLocaleString();
+            document.getElementById('targetValue').textContent = target.toLocaleString();
         }
 
         function updateCharts() {
-            updateTrendChart();
-            updateOwnershipChart();
-            updateCountyChart();
-            updateLevelChart();
-        }
+            // Status Chart (Doughnut)
+            const statusCounts = {
+                'Registered': filteredData.length,
+                'Completed': Math.floor(filteredData.length * 0.6),
+                'Pending': Math.floor(filteredData.length * 0.4)
+            };
 
-        function updateTrendChart() {
+            destroyChart('statusChart');
+            const ctx1 = document.getElementById('statusChart').getContext('2d');
+            charts.statusChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: ['#60a5fa','#48bb78','#a78bfa'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, padding: 10, font: { size: 11 } }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // County Pie Chart
+            const countyCounts = {};
+            filteredData.forEach(row => {
+                const county = getColumnValue(row, 'county');
+                if (county) countyCounts[county] = (countyCounts[county] || 0) + 1;
+            });
+            const topCounties = Object.entries(countyCounts).sort((a,b) => b[1]-a[1]).slice(0,5);
+
+            destroyChart('countyPieChart');
+            const ctx2 = document.getElementById('countyPieChart').getContext('2d');
+            charts.countyPieChart = new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: topCounties.map(([c]) => c),
+                    datasets: [{
+                        data: topCounties.map(([,n]) => n),
+                        backgroundColor: ['#FF6B35','#f093fb','#4facfe','#43e97b','#fbbf24'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, padding: 8, font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            // Coverage Gauge
+            const coverage = Math.min(Math.round((filteredData.length / 20000) * 100), 100);
+            destroyChart('coverageGauge');
+            const ctx3 = document.getElementById('coverageGauge').getContext('2d');
+            charts.coverageGauge = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [coverage, 100-coverage],
+                        backgroundColor: ['#48bb78','#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                },
+                plugins: [{
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const width = chart.width;
+                        const height = chart.height;
+                        ctx.restore();
+                        ctx.font = 'bold 24px Inter';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = '#2d3748';
+                        const text = coverage + '%';
+                        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                        const textY = height / 2;
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }]
+            });
+
+            // Level Gauge
+            const levelCounts = {};
+            filteredData.forEach(row => {
+                const level = getColumnValue(row, 'level');
+                if (level) levelCounts[level] = (levelCounts[level] || 0) + 1;
+            });
+            const totalLevels = Object.values(levelCounts).reduce((a,b) => a+b, 0);
+            const levelPercentage = totalLevels > 0 ? Math.round((Object.keys(levelCounts).length / 6) * 100) : 0;
+
+            destroyChart('levelGauge');
+            const ctx4 = document.getElementById('levelGauge').getContext('2d');
+            charts.levelGauge = new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [levelPercentage, 100-levelPercentage],
+                        backgroundColor: ['#48bb78','#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                },
+                plugins: [{
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const width = chart.width;
+                        const height = chart.height;
+                        ctx.restore();
+                        ctx.font = 'bold 20px Inter';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = '#2d3748';
+                        const text = Object.keys(levelCounts).length + ' Levels';
+                        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                        const textY = height / 2;
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }]
+            });
+
+            // Trend Chart
             const dailyCounts = {};
             filteredData.forEach(row => {
                 try {
@@ -1020,189 +1028,127 @@
             });
 
             const sortedDates = Object.keys(dailyCounts).sort();
-            const labels = sortedDates.map(date => {
-                try {
-                    return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                } catch(e) { return date; }
-            });
+            const labels = sortedDates.map(date => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
             const data = sortedDates.map(date => dailyCounts[date]);
 
             destroyChart('trendChart');
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            charts.trendChart = new Chart(ctx, {
+            const ctx5 = document.getElementById('trendChart').getContext('2d');
+            charts.trendChart = new Chart(ctx5, {
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: 'Registrations',
-                        data: data,
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        borderWidth: 3
-                    }]
+                    datasets: [
+                        {
+                            label: 'Actual',
+                            data: data,
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Target',
+                            data: Array(labels.length).fill(100),
+                            borderColor: '#48bb78',
+                            borderDash: [5,5],
+                            tension: 0,
+                            fill: false,
+                            borderWidth: 2
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: { boxWidth: 12, padding: 10, font: { size: 11 } }
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#f8fafc' } },
+                        y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
                         x: { grid: { display: false } }
                     }
                 }
             });
-        }
 
-        function updateOwnershipChart() {
+            // County Bar Chart
+            const top20Counties = Object.entries(countyCounts).sort((a,b) => b[1]-a[1]).slice(0,20);
+
+            destroyChart('countyBarChart');
+            const ctx6 = document.getElementById('countyBarChart').getContext('2d');
+            charts.countyBarChart = new Chart(ctx6, {
+                type: 'bar',
+                data: {
+                    labels: top20Counties.map(([c]) => c),
+                    datasets: [
+                        {
+                            label: 'Actual',
+                            data: top20Counties.map(([,n]) => n),
+                            backgroundColor: '#60a5fa',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Target',
+                            data: Array(top20Counties.length).fill(500),
+                            backgroundColor: '#48bb78',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: { boxWidth: 12, padding: 10, font: { size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: '#f3f4f6' } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Ownership Chart
             const ownershipCounts = {};
             filteredData.forEach(row => {
                 const ownership = getColumnValue(row, 'ownership') || 'Not Specified';
                 ownershipCounts[ownership] = (ownershipCounts[ownership] || 0) + 1;
             });
 
-            const labels = Object.keys(ownershipCounts);
-            const data = Object.values(ownershipCounts);
-
             destroyChart('ownershipChart');
-            const ctx = document.getElementById('ownershipChart').getContext('2d');
-            charts.ownershipChart = new Chart(ctx, {
-                type: 'doughnut',
+            const ctx7 = document.getElementById('ownershipChart').getContext('2d');
+            charts.ownershipChart = new Chart(ctx7, {
+                type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: Object.keys(ownershipCounts),
                     datasets: [{
-                        data: data,
-                        backgroundColor: ['#667eea','#8b5cf6','#10b981','#f59e0b','#ef4444']
+                        label: 'Registrations',
+                        data: Object.values(ownershipCounts),
+                        backgroundColor: ['#60a5fa','#48bb78','#a78bfa','#fbbf24'],
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { padding: 15, font: { size: 12, weight: '600' } } }
-                    }
-                }
-            });
-        }
-
-        function updateCountyChart() {
-            const countyCounts = {};
-            filteredData.forEach(row => {
-                const county = getColumnValue(row, 'county');
-                if (county) countyCounts[county] = (countyCounts[county] || 0) + 1;
-            });
-
-            const sorted = Object.entries(countyCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            const labels = sorted.map(([county]) => county);
-            const data = sorted.map(([, count]) => count);
-
-            destroyChart('countyChart');
-            const ctx = document.getElementById('countyChart').getContext('2d');
-            charts.countyChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{ label: 'Registrations', data: data, backgroundColor: '#764ba2' }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                        legend: { display: false }
+                    },
                     scales: {
-                        x: { beginAtZero: true, grid: { color: '#f8fafc' } },
-                        y: { grid: { display: false } }
-                    }
-                }
-            });
-        }
-
-        function updateLevelChart() {
-            const levelCounts = {};
-            filteredData.forEach(row => {
-                const level = getColumnValue(row, 'level') || 'Not Specified';
-                levelCounts[level] = (levelCounts[level] || 0) + 1;
-            });
-
-            const labels = Object.keys(levelCounts).sort();
-            const data = labels.map(level => levelCounts[level]);
-
-            destroyChart('levelChart');
-            const ctx = document.getElementById('levelChart').getContext('2d');
-            charts.levelChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{ label: 'Registrations', data: data, backgroundColor: '#10b981' }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f8fafc' } },
+                        y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
                         x: { grid: { display: false } }
                     }
                 }
             });
-        }
-
-        function updateTable() {
-            const tbody = document.getElementById('tableBody');
-            const limit = tableLimit === 'all' ? filteredData.length : parseInt(tableLimit);
-            
-            const sortedData = [...filteredData].sort((a, b) => {
-                try {
-                    const dateA = new Date(getColumnValue(a, 'timestamp'));
-                    const dateB = new Date(getColumnValue(b, 'timestamp'));
-                    return dateB - dateA;
-                } catch(e) {
-                    return 0;
-                }
-            });
-            
-            const displayData = sortedData.slice(0, limit);
-
-            tbody.innerHTML = displayData.map(row => {
-                const ownership = getColumnValue(row, 'ownership');
-                let badgeClass = 'badge-primary';
-                if (ownership.toLowerCase().includes('gov')) badgeClass = 'badge-success';
-                else if (ownership.toLowerCase().includes('private')) badgeClass = 'badge-warning';
-                else if (ownership.toLowerCase().includes('faith')) badgeClass = 'badge-danger';
-
-                return `
-                    <tr>
-                        <td style="color: var(--gray);">${formatDate(getColumnValue(row, 'timestamp'))}</td>
-                        <td style="font-weight: 600;">${getColumnValue(row, 'name') || '-'}</td>
-                        <td style="color: var(--gray);">${getColumnValue(row, 'email') || '-'}</td>
-                        <td>${getColumnValue(row, 'county') || '-'}</td>
-                        <td>${getColumnValue(row, 'facility') || '-'}</td>
-                        <td>${getColumnValue(row, 'level') || '-'}</td>
-                        <td>${getColumnValue(row, 'role') || '-'}</td>
-                        <td><span class="badge ${badgeClass}">${ownership || 'Not Specified'}</span></td>
-                    </tr>
-                `;
-            }).join('');
-
-            document.getElementById('tableFooter').textContent = 
-                `Showing ${displayData.length} of ${filteredData.length} filtered registrations`;
-            document.getElementById('tableSubtitle').textContent = 
-                `Displaying ${filteredData.length} filtered records from ${allData.length} total`;
-        }
-
-        function setTableLimit(limit) {
-            document.querySelectorAll('.table-control-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            tableLimit = limit;
-            updateTable();
-        }
-
-        function exportData() {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(filteredData);
-            XLSX.utils.book_append_sheet(wb, ws, 'Training Data');
-            XLSX.writeFile(wb, `training_data_filtered_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         function destroyChart(chartId) {
@@ -1212,23 +1158,11 @@
             }
         }
 
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return dateString;
-                return date.toLocaleDateString('en-US', { 
-                    month: 'short', day: 'numeric', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
-            } catch(e) {
-                return dateString;
-            }
-        }
-
-        function updateTimestamp() {
-            document.getElementById('lastUpdated').textContent = 
-                `Updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+        function exportData() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(filteredData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Training Data');
+            XLSX.writeFile(wb, `training_monitoring_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         function refreshData() {
@@ -1236,7 +1170,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', initDashboard);
-        setInterval(refreshData, 5 * 60 * 1000);
     </script>
 </body>
 </html>

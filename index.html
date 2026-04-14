@@ -1,1386 +1,1310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Healthcare Training Registration Dashboard</title>
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<style>
-  :root {
-    --bg:      #f0f5ff;
-    --surface: #ffffff;
-    --card:    #ffffff;
-    --border:  #d0e0f7;
-    --accent:  #1a6fd4;
-    --accent2: #0ea5e9;
-    --accent3: #0369a1;
-    --warn:    #f59e0b;
-    --text:    #0f2a52;
-    --muted:   #6b8cba;
-    --success: #059669;
-    --danger:  #dc2626;
-    --glow:    0 0 30px rgba(26,111,212,0.15);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 15px; scroll-behavior: smooth; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg); color: var(--text);
-    min-height: 100vh; overflow-x: hidden;
-    background-image:
-      radial-gradient(ellipse 800px 500px at 0% 0%, rgba(26,111,212,0.06) 0%, transparent 70%),
-      radial-gradient(ellipse 600px 600px at 100% 100%, rgba(14,165,233,0.05) 0%, transparent 70%);
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Training Analytics Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-50: #f0f9ff;
+            --primary-100: #e0f2fe;
+            --primary-500: #0ea5e9;
+            --primary-600: #0284c7;
+            --primary-700: #0369a1;
+            
+            --secondary-500: #8b5cf6;
+            --secondary-600: #7c3aed;
+            
+            --success-50: #f0fdf4;
+            --success-500: #10b981;
+            --success-600: #059669;
+            
+            --warning-50: #fffbeb;
+            --warning-500: #f59e0b;
+            
+            --danger-50: #fef2f2;
+            --danger-500: #ef4444;
+            --danger-600: #dc2626;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+        }
 
-  /* HEADER */
-  .header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.93); backdrop-filter: blur(24px);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 16px rgba(26,111,212,0.08);
-    padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px;
-  }
-  .header-logo { display: flex; align-items: center; gap: 12px; }
-  .logo-img {
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    object-fit: cover;
-    box-shadow: 0 0 16px rgba(26,111,212,0.25);
-    border: 1px solid var(--border);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .logo-img:hover { transform: scale(1.06); box-shadow: 0 0 24px rgba(26,111,212,0.4); }
-  .logo-text {
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
-    letter-spacing: -0.02em;
-    background: linear-gradient(90deg, var(--text), var(--accent));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .logo-sub { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
-  .header-right { display: flex; align-items: center; gap: 14px; }
-  .conn-badge {
-    display: flex; align-items: center; gap: 6px;
-    border-radius: 20px; padding: 4px 12px;
-    font-size: 0.72rem; font-weight: 500; letter-spacing: 0.05em;
-    text-transform: uppercase; border: 1px solid; transition: all 0.3s;
-  }
-  .conn-badge.connecting { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.3); color:var(--warn); }
-  .conn-badge.success    { background:rgba(5,150,105,0.08);  border-color:rgba(5,150,105,0.25); color:var(--success); }
-  .conn-badge.error      { background:rgba(220,38,38,0.08);  border-color:rgba(220,38,38,0.25); color:var(--danger); }
-  .conn-dot { width:7px; height:7px; border-radius:50%; background:currentColor; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
-  .last-updated { font-size: 0.72rem; color: var(--muted); }
-  .refresh-btn {
-    display: flex; align-items: center; gap: 7px;
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 6px 14px; color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
-  }
-  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
-  .refresh-btn svg { transition: transform 0.5s; }
-  .refresh-btn:hover svg { transform: rotate(180deg); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom right, var(--gray-50), var(--primary-50));
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-  /* ANALYTICS BUTTON */
-  .analytics-btn {
-    display: flex; align-items: center; gap: 7px;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    border: none; border-radius: 8px;
-    padding: 7px 16px; color: #fff;
-    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-    box-shadow: 0 2px 12px rgba(124,58,237,0.3);
-  }
-  .analytics-btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.4); }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-  /* ANALYTICS MODAL */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(10,20,50,0.55); backdrop-filter: blur(6px);
-    align-items: flex-start; justify-content: center;
-    padding: 24px 16px; overflow-y: auto;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface); border-radius: 24px;
-    width: 100%; max-width: 1100px;
-    box-shadow: 0 24px 80px rgba(10,20,50,0.25);
-    border: 1px solid var(--border);
-    animation: modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    overflow: hidden;
-  }
-  @keyframes modalIn { from{opacity:0;transform:scale(0.94) translateY(-20px)} to{opacity:1;transform:scale(1) translateY(0)} }
-  .modal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, #7c3aed08, #a855f708);
-  }
-  .modal-title-group { display: flex; align-items: center; gap: 14px; }
-  .modal-icon {
-    width: 46px; height: 46px; border-radius: 12px;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; box-shadow: 0 4px 16px rgba(124,58,237,0.35);
-  }
-  .modal-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--text); }
-  .modal-subtitle { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
-  .modal-close {
-    width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
-    background: var(--bg); color: var(--muted); font-size: 1.1rem;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  .modal-close:hover { background: #fef2f2; border-color: #fca5a5; color: var(--danger); }
-  .modal-tabs {
-    display: flex; gap: 0; border-bottom: 1px solid var(--border);
-    padding: 0 2rem; background: var(--bg);
-  }
-  .modal-tab {
-    padding: 12px 20px; font-family: 'DM Sans', sans-serif; font-size: 0.83rem;
-    font-weight: 500; color: var(--muted); border: none; background: none;
-    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
-    transition: all 0.2s; white-space: nowrap;
-  }
-  .modal-tab.active { color: #7c3aed; border-bottom-color: #7c3aed; font-weight: 600; }
-  .modal-tab:hover:not(.active) { color: var(--text); }
-  .modal-body { padding: 2rem; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
 
-  /* SUMMARY CARDS ROW */
-  .summary-row {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 14px; margin-bottom: 2rem;
-  }
-  .sum-card {
-    background: linear-gradient(135deg, var(--bg), #fff);
-    border: 1px solid var(--border); border-radius: 14px;
-    padding: 1.2rem; text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .sum-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,111,212,0.1); }
-  .sum-card-val {
-    font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800;
-    line-height: 1; margin-bottom: 4px;
-  }
-  .sum-card-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
-  .c-purple .sum-card-val { color: #7c3aed; }
-  .c-blue   .sum-card-val { color: var(--accent); }
-  .c-green  .sum-card-val { color: var(--success); }
-  .c-amber  .sum-card-val { color: var(--warn); }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-  /* ANALYTICS TABLE */
-  .analytics-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-  .analytics-table { width: 100%; border-collapse: collapse; }
-  .analytics-table thead { background: linear-gradient(90deg, #7c3aed, #a855f7); }
-  .analytics-table th {
-    padding: 11px 14px; text-align: left; color: #fff;
-    font-family: 'Syne', sans-serif; font-size: 0.72rem;
-    font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
-  }
-  .analytics-table td {
-    padding: 10px 14px; font-size: 0.83rem; color: var(--text);
-    border-bottom: 1px solid rgba(208,224,247,0.5);
-  }
-  .analytics-table tbody tr:hover { background: rgba(124,58,237,0.03); }
-  .analytics-table tbody tr:last-child td { border-bottom: none; font-weight: 700; color: #7c3aed; background: rgba(124,58,237,0.04); }
-  .badge-gok     { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(5,150,105,0.1); color:var(--success); border:1px solid rgba(5,150,105,0.25); }
-  .badge-private { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(220,38,38,0.08); color:var(--danger); border:1px solid rgba(220,38,38,0.2); }
-  .badge-faith   { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(245,158,11,0.1); color:var(--warn); border:1px solid rgba(245,158,11,0.25); }
-  .badge-total   { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; background:rgba(124,58,237,0.1); color:#7c3aed; border:1px solid rgba(124,58,237,0.25); }
-  .progress-bar-wrap { display:flex; align-items:center; gap:8px; }
-  .progress-bar { flex:1; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
-  .progress-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#7c3aed,#a855f7); transition:width 0.5s; }
-  .progress-pct  { font-size:0.72rem; color:var(--muted); min-width:32px; }
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
 
-  /* CHARTS IN MODAL */
-  .modal-charts-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:1.5rem; }
-  .modal-chart-card {
-    background:var(--bg); border:1px solid var(--border); border-radius:14px;
-    padding:1.25rem;
-  }
-  .modal-chart-title { font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; margin-bottom:1rem; color:var(--text); }
-  .modal-chart-canvas { position:relative; height:220px; }
+        .header-title h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+        }
 
-  /* Section divider */
-  .section-label {
-    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.1em; color: #7c3aed;
-    margin-bottom: 1rem; display:flex; align-items:center; gap:8px;
-  }
-  .section-label::after { content:''; flex:1; height:1px; background:rgba(124,58,237,0.15); }
+        .header-title p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
 
-  /* LOADING */
-  .loading-screen {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: calc(100vh - 64px); gap: 1rem;
-  }
-  .spinner { width:44px; height:44px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { color: var(--muted); font-size: 0.9rem; }
-  .loading-sub  { color: var(--muted); font-size: 0.78rem; }
-  .error-card { background:var(--card); border:1px solid #fca5a5; border-radius:16px; padding:2rem; max-width:560px; margin:2rem auto; box-shadow:0 4px 20px rgba(220,38,38,0.08); }
-  .error-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--danger); margin-bottom:.5rem; }
-  .error-body  { font-size:0.82rem; color:var(--muted); margin-bottom:1rem; line-height:1.6; }
-  .debug-box { background:#f0f5ff; border:1px solid var(--border); border-radius:8px; padding:.75rem; font-family:monospace; font-size:0.72rem; color:var(--muted); margin-bottom:1rem; word-break:break-all; }
-  .retry-btn { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:8px 20px; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; }
-  .retry-btn:hover { opacity:.85; }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
 
-  /* LAYOUT */
-  .main { max-width: 1520px; margin: 0 auto; padding: 2rem; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes slideDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
 
-  /* FILTER BAR */
-  .filter-section { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.5rem; margin-bottom:1.75rem; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:slideDown 0.45s ease; }
-  .filter-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
-  .filter-title { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
-  .export-btn { display:flex; align-items:center; gap:7px; background:linear-gradient(135deg,#059669,#0ea5e9); border:none; border-radius:8px; padding:7px 16px; color:#fff; font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:500; cursor:pointer; transition:opacity .2s, transform .15s; }
-  .export-btn:hover { opacity:.88; transform:translateY(-1px); }
-  .filter-row { display:flex; flex-wrap:wrap; gap:12px; align-items:end; }
-  .filter-group { display:flex; flex-direction:column; gap:6px; }
-  .filter-label { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
-  .period-chips { display:flex; gap:6px; flex-wrap:wrap; }
-  .chip { padding:5px 13px; border-radius:20px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:0.78rem; cursor:pointer; transition:all .18s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
-  .chip:hover { border-color:var(--accent); color:var(--accent); }
-  .chip.active { background:rgba(26,111,212,0.12); border-color:var(--accent); color:var(--accent); font-weight:500; }
-  .filter-input, .filter-select { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:7px 12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.85rem; outline:none; transition:border-color .2s; width:100%; }
-  .filter-input:focus, .filter-select:focus { border-color:var(--accent); }
-  .filter-input::placeholder { color:var(--muted); }
-  .filter-input { min-width:140px; }
-  .filter-select { min-width:170px; cursor:pointer; appearance:none; padding-right:28px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236b8cba' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
-  .filter-select option { background:var(--surface); }
-  .apply-btn { display:flex; align-items:center; gap:7px; background:rgba(26,111,212,0.1); border:1px solid var(--accent); border-radius:8px; padding:7px 18px; color:var(--accent); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:all .2s; white-space:nowrap; }
-  .apply-btn:hover { background:rgba(26,111,212,0.18); box-shadow:var(--glow); }
-  .active-filters { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-  .filter-tag { display:flex; align-items:center; gap:7px; background:rgba(26,111,212,0.08); border:1px solid rgba(26,111,212,0.25); border-radius:20px; padding:4px 10px; font-size:0.75rem; color:var(--accent); }
-  .filter-tag button { background:var(--danger); color:#fff; border:none; border-radius:10px; padding:1px 6px; font-size:0.68rem; cursor:pointer; }
+        .status-badge.live {
+            background: var(--success-50);
+            color: var(--success-600);
+            border: 1px solid var(--success-500);
+        }
 
-  /* STATS */
-  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:1.75rem; }
-  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.4rem; position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:fadeUp 0.6s ease both; }
-  .stat-card:nth-child(1){animation-delay:.05s}
-  .stat-card:nth-child(2){animation-delay:.10s}
-  .stat-card:nth-child(3){animation-delay:.15s}
-  .stat-card:nth-child(4){animation-delay:.20s}
-  .stat-card:nth-child(5){animation-delay:.25s}
-  .stat-card:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(26,111,212,0.12); }
-  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:16px 16px 0 0; }
-  .stat-card.c1::before{background:linear-gradient(90deg,var(--accent),transparent)}
-  .stat-card.c2::before{background:linear-gradient(90deg,var(--accent2),transparent)}
-  .stat-card.c3::before{background:linear-gradient(90deg,var(--accent3),transparent)}
-  .stat-card.c4::before{background:linear-gradient(90deg,var(--warn),transparent)}
-  .stat-card.c5::before{background:linear-gradient(90deg,var(--success),transparent)}
-  .stat-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:.9rem; }
-  .c1 .stat-icon{background:rgba(26,111,212,0.1)}
-  .c2 .stat-icon{background:rgba(14,165,233,0.1)}
-  .c3 .stat-icon{background:rgba(3,105,161,0.1)}
-  .c4 .stat-icon{background:rgba(245,158,11,0.1)}
-  .c5 .stat-icon{background:rgba(5,150,105,0.1)}
-  .stat-value { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; line-height:1; margin-bottom:4px; }
-  .c1 .stat-value{color:var(--accent)}
-  .c2 .stat-value{color:var(--accent2)}
-  .c3 .stat-value{color:var(--accent3)}
-  .c4 .stat-value{color:var(--warn)}
-  .c5 .stat-value{color:var(--success)}
-  .stat-label { font-size:0.82rem; color:var(--text); font-weight:500; margin-bottom:3px; }
-  .stat-sub   { font-size:0.72rem; color:var(--muted); }
+        .status-badge.loading {
+            background: var(--warning-50);
+            color: var(--warning-600);
+            border: 1px solid var(--warning-500);
+        }
 
-  /* CHARTS */
-  .charts-row { display:grid; gap:16px; margin-bottom:1.75rem; }
-  .charts-2col { grid-template-columns:1fr 1fr; }
-  .charts-1col { grid-template-columns:1fr; }
-  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:fadeUp 0.6s ease 0.2s both; }
-  .chart-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
-  .chart-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:var(--text); }
-  .chart-sub   { font-size:0.75rem; color:var(--muted); margin-top:2px; }
-  .toggle-group { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-  .toggle-btn { padding:4px 11px; font-size:0.72rem; font-family:'DM Sans',sans-serif; background:none; border:none; color:var(--muted); cursor:pointer; transition:all .2s; }
-  .toggle-btn.active { background:rgba(26,111,212,0.12); color:var(--accent); font-weight:600; }
-  .toggle-btn:hover:not(.active) { color:var(--text); }
-  .chart-canvas { position:relative; height:280px; }
+        .status-badge.error {
+            background: var(--danger-50);
+            color: var(--danger-600);
+            border: 1px solid var(--danger-500);
+        }
 
-  /* TABLE */
-  .table-section { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; box-shadow:0 2px 12px rgba(26,111,212,0.06); animation:fadeUp 0.6s ease 0.3s both; }
-  .table-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:12px; }
-  .table-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; }
-  .show-chips { display:flex; gap:5px; }
-  .show-chip { padding:4px 12px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-size:0.75rem; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
-  .show-chip.active { background:rgba(14,165,233,0.12); border-color:var(--accent2); color:var(--accent2); font-weight:500; }
-  .table-wrap { overflow-x:auto; }
-  table { width:100%; border-collapse:collapse; }
-  thead { background:linear-gradient(90deg,var(--accent),var(--accent2)); }
-  th { padding:11px 13px; text-align:left; font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.06em; white-space:nowrap; }
-  td { padding:10px 13px; font-size:0.82rem; color:var(--text); border-bottom:1px solid rgba(208,224,247,0.5); }
-  tbody tr:hover { background:rgba(26,111,212,0.03); }
-  .td-muted { color:var(--muted); }
-  .role-badge { display:inline-block; padding:2px 9px; border-radius:10px; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap; background:rgba(26,111,212,0.1); color:var(--accent); border:1px solid rgba(26,111,212,0.2); }
-  .own-gov     { background:rgba(5,150,105,0.08); color:var(--success); border:1px solid rgba(5,150,105,0.2); }
-  .own-private { background:rgba(220,38,38,0.08); color:var(--danger);  border:1px solid rgba(220,38,38,0.2); }
-  .own-faith   { background:rgba(245,158,11,0.08); color:var(--warn);   border:1px solid rgba(245,158,11,0.2); }
-  .own-other   { background:rgba(14,165,233,0.08); color:var(--accent2); border:1px solid rgba(14,165,233,0.2); }
-  .table-footer { display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
-  .row-count { font-size:0.78rem; color:var(--muted); }
-  .empty-state { text-align:center; padding:3rem 1rem; color:var(--muted); }
-  .empty-icon  { font-size:2.5rem; margin-bottom:.75rem; }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
 
-  ::-webkit-scrollbar { width:6px; height:6px; }
-  ::-webkit-scrollbar-track { background:var(--bg); }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
-  @media (max-width:1200px) { .stats-grid{grid-template-columns:repeat(3,1fr);} .filter-row{flex-wrap:wrap;} .summary-row{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:900px)  { .stats-grid{grid-template-columns:1fr 1fr;} .charts-2col{grid-template-columns:1fr;} .main{padding:1rem;} .modal-charts-row{grid-template-columns:1fr;} }
-  @media (max-width:600px)  { .stats-grid{grid-template-columns:1fr;} .header-right .last-updated{display:none;} .summary-row{grid-template-columns:1fr 1fr;} }
-</style>
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-500), var(--secondary-500));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #667eea20, #764ba220); }
+        .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #f093fb20, #f5576c20); }
+        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #4facfe20, #00f2fe20); }
+        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #43e97b20, #38f9d720); }
+        .stat-card:nth-child(5) .stat-icon { background: linear-gradient(135deg, #fa709a20, #fee14020); }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .filters-section {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filters-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .quick-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-filter-chip {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .quick-filter-chip:hover {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+
+        .quick-filter-chip.active {
+            background: var(--primary-500);
+            color: var(--white);
+            border-color: var(--primary-600);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .chart-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .chart-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        .table-section {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .table-control-btn {
+            padding: 0.375rem 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .table-control-btn:hover {
+            border-color: var(--primary-500);
+            color: var(--primary-600);
+        }
+
+        .table-control-btn.active {
+            background: var(--primary-500);
+            color: var(--white);
+            border-color: var(--primary-600);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--gray-50), var(--primary-50));
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-primary { background: var(--primary-100); color: var(--primary-700); }
+        .badge-success { background: var(--success-50); color: var(--success-600); }
+        .badge-warning { background: var(--warning-50); color: var(--warning-600); }
+        .badge-danger { background: var(--danger-50); color: var(--danger-600); }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary-500);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .loading-subtext {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .hidden { display: none !important; }
+        .text-muted { color: var(--gray-500); }
+        .font-semibold { font-weight: 600; }
+
+        @media (max-width: 1024px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .filters-grid { grid-template-columns: 1fr; }
+            .stat-value { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
-
-<!-- HEADER -->
-<header class="header">
-  <div class="header-logo">
-    <img src="logo.png" alt="Training Dashboard Logo" class="logo-img"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-    <div class="logo-icon" style="display:none;width:40px;height:40px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);border-radius:10px;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px rgba(26,111,212,0.3);">🎓</div>
-    <div>
-      <div class="logo-text">Training Dashboard</div>
-      <div class="logo-sub">Live Registration Analytics</div>
-    </div>
-  </div>
-  <div class="header-right">
-    <div class="conn-badge connecting" id="connBadge">
-      <div class="conn-dot"></div>
-      <span id="connText">Connecting...</span>
-    </div>
-    <span class="last-updated" id="lastUpdated"></span>
-    <button class="analytics-btn" onclick="openAnalytics()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Analytics
-    </button>
-    <button class="refresh-btn" onclick="loadData()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Refresh
-    </button>
-  </div>
-</header>
-
-<!-- ==================== ANALYTICS MODAL ==================== -->
-<div class="modal-overlay" id="analyticsModal" onclick="handleModalClick(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title-group">
-        <div class="modal-icon">📊</div>
-        <div>
-          <div class="modal-title">Training Analytics Report</div>
-          <div class="modal-subtitle" id="analyticsSubtitle">Based on current filter selection</div>
-        </div>
-      </div>
-      <button class="modal-close" onclick="closeAnalytics()">✕</button>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading Training Data</div>
+        <div class="loading-subtext" id="loadingStatus">Connecting to data source...</div>
     </div>
 
-    <!-- TABS -->
-    <div class="modal-tabs">
-      <button class="modal-tab active" onclick="switchTab(this,'tab-overview')">Overview</button>
-      <button class="modal-tab" onclick="switchTab(this,'tab-date')">By Date</button>
-      <button class="modal-tab" onclick="switchTab(this,'tab-level')">By Facility Level</button>
-      <button class="modal-tab" onclick="switchTab(this,'tab-county')">By County</button>
+    <div id="dashboard" class="hidden">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-brand">
+                    <div class="logo">🎓</div>
+                    <div class="header-title">
+                        <h1>Training Analytics</h1>
+                        <p>Real-time Healthcare Training Dashboard</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="status-badge live" id="statusBadge">
+                        <div class="status-dot"></div>
+                        <span id="statusText">Live</span>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.875rem;" id="lastUpdated"></span>
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary" onclick="exportData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Export
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Total Registrations</div>
+                            <div class="stat-value" id="totalRegistrations">0</div>
+                            <div class="stat-change">All time</div>
+                        </div>
+                        <div class="stat-icon">📊</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Today's Registrations</div>
+                            <div class="stat-value" id="todayRegistrations">0</div>
+                            <div class="stat-change" id="todayDate"></div>
+                        </div>
+                        <div class="stat-icon">🌅</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">This Week</div>
+                            <div class="stat-value" id="weekRegistrations">0</div>
+                            <div class="stat-change">Last 7 days</div>
+                        </div>
+                        <div class="stat-icon">📅</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Counties Covered</div>
+                            <div class="stat-value" id="countiesCount">0</div>
+                            <div class="stat-change">Out of 47</div>
+                        </div>
+                        <div class="stat-icon">🗺️</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Facility Types</div>
+                            <div class="stat-value" id="facilityTypes">0</div>
+                            <div class="stat-change">Ownership categories</div>
+                        </div>
+                        <div class="stat-icon">🏥</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <div class="filters-header">
+                    <h2 class="filters-title">Filters & Controls</h2>
+                </div>
+                
+                <div class="filter-group" style="margin-bottom: 1rem;">
+                    <label class="filter-label">Quick Date Range</label>
+                    <div class="quick-filters">
+                        <button class="quick-filter-chip" onclick="applyQuickFilter('today')">Today</button>
+                        <button class="quick-filter-chip" onclick="applyQuickFilter('yesterday')">Yesterday</button>
+                        <button class="quick-filter-chip" onclick="applyQuickFilter('7days')">Last 7 Days</button>
+                        <button class="quick-filter-chip" onclick="applyQuickFilter('30days')">Last 30 Days</button>
+                        <button class="quick-filter-chip active" onclick="applyQuickFilter('all')">All Time</button>
+                    </div>
+                </div>
+
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">From Date</label>
+                        <input type="date" class="filter-input" id="fromDate">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">To Date</label>
+                        <input type="date" class="filter-input" id="toDate">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">County</label>
+                        <select class="filter-select" id="countyFilter">
+                            <option value="">All Counties</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Facility Ownership</label>
+                        <select class="filter-select" id="ownershipFilter">
+                            <option value="">All Facilities</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Facility Level</label>
+                        <select class="filter-select" id="levelFilter">
+                            <option value="">All Levels</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Role</label>
+                        <select class="filter-select" id="roleFilter">
+                            <option value="">All Roles</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h3 class="chart-title">Registration Trend</h3>
+                            <p class="chart-subtitle">Daily registrations over time</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h3 class="chart-title">Facility Ownership</h3>
+                            <p class="chart-subtitle">Distribution by ownership type</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="ownershipChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h3 class="chart-title">Top Counties</h3>
+                            <p class="chart-subtitle">Highest participation by county</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="countyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h3 class="chart-title">Facility Level Distribution</h3>
+                            <p class="chart-subtitle">KEPH tier breakdown</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="levelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <div>
+                        <h3 class="table-title">Recent Registrations</h3>
+                        <p style="font-size: 0.875rem; color: var(--gray-500); margin-top: 0.25rem;" id="tableSubtitle"></p>
+                    </div>
+                    <div class="table-controls">
+                        <button class="table-control-btn" onclick="setTableLimit(25)">25</button>
+                        <button class="table-control-btn" onclick="setTableLimit(50)">50</button>
+                        <button class="table-control-btn active" onclick="setTableLimit(100)">100</button>
+                        <button class="table-control-btn" onclick="setTableLimit('all')">All</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>County</th>
+                                <th>Facility</th>
+                                <th>Level</th>
+                                <th>Role</th>
+                                <th>Ownership</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1rem; text-align: center; color: var(--gray-500); font-size: 0.875rem;" id="tableFooter"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="modal-body">
-
-      <!-- ===== OVERVIEW TAB ===== -->
-      <div class="tab-panel active" id="tab-overview">
-        <div class="summary-row">
-          <div class="sum-card c-purple">
-            <div class="sum-card-val" id="an-total">—</div>
-            <div class="sum-card-label">Total Registrations</div>
-          </div>
-          <div class="sum-card c-blue">
-            <div class="sum-card-val" id="an-gok">—</div>
-            <div class="sum-card-label">GOK / Government</div>
-          </div>
-          <div class="sum-card c-green">
-            <div class="sum-card-val" id="an-private">—</div>
-            <div class="sum-card-label">Private Facilities</div>
-          </div>
-          <div class="sum-card c-amber">
-            <div class="sum-card-val" id="an-faith">—</div>
-            <div class="sum-card-label">Faith Based</div>
-          </div>
-        </div>
-
-        <div class="section-label">Ownership Breakdown</div>
-        <div class="modal-charts-row">
-          <div class="modal-chart-card">
-            <div class="modal-chart-title">Registrations by Ownership Type</div>
-            <div class="modal-chart-canvas"><canvas id="overviewOwnerChart"></canvas></div>
-          </div>
-          <div class="modal-chart-card">
-            <div class="modal-chart-title">Share by Ownership</div>
-            <div class="modal-chart-canvas"><canvas id="overviewPieChart"></canvas></div>
-          </div>
-        </div>
-
-        <div class="section-label">Top 10 Counties</div>
-        <div class="analytics-table-wrap">
-          <table class="analytics-table">
-            <thead><tr><th>#</th><th>County</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th><th>Share</th></tr></thead>
-            <tbody id="topCountyTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ===== DATE TAB ===== -->
-      <div class="tab-panel" id="tab-date">
-        <div class="section-label">Daily Registrations by Ownership</div>
-        <div class="modal-chart-card" style="margin-bottom:1.5rem">
-          <div class="modal-chart-title" id="dateTrendTitle">Daily Registrations — filtered selection</div>
-          <div class="modal-chart-canvas" style="height:260px"><canvas id="dateStackedChart"></canvas></div>
-        </div>
-        <div class="analytics-table-wrap">
-          <table class="analytics-table">
-            <thead><tr><th>Date</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th></tr></thead>
-            <tbody id="dateTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ===== LEVEL TAB ===== -->
-      <div class="tab-panel" id="tab-level">
-        <div class="section-label">Registration by KEPH Facility Level</div>
-        <div class="modal-chart-card" style="margin-bottom:1.5rem">
-          <div class="modal-chart-title">Registrations by Facility Level &amp; Ownership</div>
-          <div class="modal-chart-canvas" style="height:260px"><canvas id="levelGroupedChart"></canvas></div>
-        </div>
-        <div class="analytics-table-wrap">
-          <table class="analytics-table">
-            <thead><tr><th>Facility Level</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th><th>% of Total</th></tr></thead>
-            <tbody id="levelTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ===== COUNTY TAB ===== -->
-      <div class="tab-panel" id="tab-county">
-        <div class="section-label">All 47 Counties — Detailed Breakdown</div>
-        <div class="modal-chart-card" style="margin-bottom:1.5rem">
-          <div class="modal-chart-title">All Counties (Top 20 shown)</div>
-          <div class="modal-chart-canvas" style="height:320px"><canvas id="allCountyChart"></canvas></div>
-        </div>
-        <div class="analytics-table-wrap">
-          <table class="analytics-table">
-            <thead><tr><th>Rank</th><th>County</th><th>GOK</th><th>Private</th><th>Faith Based</th><th>Total</th><th>Coverage</th></tr></thead>
-            <tbody id="countyFullTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </div><!-- /modal-body -->
-  </div><!-- /modal -->
-</div>
-
-<!-- LOADING SCREEN -->
-<div id="loadingScreen" class="loading-screen">
-  <div class="spinner"></div>
-  <div class="loading-text">Loading data from Google Sheets...</div>
-  <div class="loading-sub" id="loadingStatus">Connecting to data source...</div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none">
-  <main class="main">
-
-    <!-- FILTERS -->
-    <div class="filter-section">
-      <div class="filter-header">
-        <span class="filter-title">🔍 Filters &amp; Controls</span>
-        <button class="export-btn" onclick="exportToExcel()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export to Excel
-        </button>
-      </div>
-      <div class="filter-row">
-        <div class="filter-group">
-          <label class="filter-label">Quick Period</label>
-          <div class="period-chips">
-            <div class="chip" onclick="applyQuickPick(this,'today')">Today</div>
-            <div class="chip" onclick="applyQuickPick(this,'yesterday')">Yesterday</div>
-            <div class="chip" onclick="applyQuickPick(this,'7days')">7 Days</div>
-            <div class="chip" onclick="applyQuickPick(this,'30days')">30 Days</div>
-            <div class="chip active" onclick="applyQuickPick(this,'all')">All Time</div>
-          </div>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">From Date</label>
-          <input type="date" class="filter-input" id="fromDate">
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">To Date</label>
-          <input type="date" class="filter-input" id="toDate">
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Facility Ownership</label>
-          <select class="filter-select" id="ownershipFilter" onchange="applyOwnershipFilter()">
-            <option value="">All Facilities</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Facility Level</label>
-          <select class="filter-select" id="levelFilter" onchange="applyLevelFilter()">
-            <option value="">All Levels</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Facility Name</label>
-          <input type="text" class="filter-input" id="facilitySearch" placeholder="Search facility..." oninput="applyFacilitySearch()">
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">&nbsp;</label>
-          <button class="apply-btn" onclick="applyCustomRange()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            Apply
-          </button>
-        </div>
-      </div>
-      <div class="active-filters" id="activeFilters"></div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card c1"><div class="stat-icon">📋</div><div class="stat-value" id="totalRegistrations">0</div><div class="stat-label">Total Registrations</div><div class="stat-sub">All time</div></div>
-      <div class="stat-card c2"><div class="stat-icon">🌅</div><div class="stat-value" id="todayRegistrations">0</div><div class="stat-label">Today's Registrations</div><div class="stat-sub" id="todayDate"></div></div>
-      <div class="stat-card c3"><div class="stat-icon">📅</div><div class="stat-value" id="weekRegistrations">0</div><div class="stat-label">This Week</div><div class="stat-sub">Last 7 days</div></div>
-      <div class="stat-card c4"><div class="stat-icon">🗺️</div><div class="stat-value" id="countiesCount">0</div><div class="stat-label">Counties Represented</div><div class="stat-sub">Out of 47</div></div>
-      <div class="stat-card c5"><div class="stat-icon">🏛️</div><div class="stat-value" id="facilityOwnership">0</div><div class="stat-label">Ownership Types</div><div class="stat-sub">Unique values</div></div>
-    </div>
-
-    <!-- Daily Chart -->
-    <div class="charts-row charts-1col">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><div class="chart-title">Daily Registrations</div><div class="chart-sub">Registration trend over time</div></div>
-          <div class="toggle-group" id="dailyToggle">
-            <button class="toggle-btn" onclick="setDailyPeriod(this,7)">7D</button>
-            <button class="toggle-btn" onclick="setDailyPeriod(this,14)">14D</button>
-            <button class="toggle-btn active" onclick="setDailyPeriod(this,30)">30D</button>
-            <button class="toggle-btn" onclick="setDailyPeriod(this,60)">60D</button>
-            <button class="toggle-btn" onclick="setDailyPeriod(this,'all')">All</button>
-          </div>
-        </div>
-        <div class="chart-canvas"><canvas id="dailyChart"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Role + County -->
-    <div class="charts-row charts-2col">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><div class="chart-title">By Role</div><div class="chart-sub">Cadres represented</div></div>
-          <div class="toggle-group" id="roleToggle">
-            <button class="toggle-btn active" onclick="setRoleLimit(this,5)">Top 5</button>
-            <button class="toggle-btn" onclick="setRoleLimit(this,8)">Top 8</button>
-            <button class="toggle-btn" onclick="setRoleLimit(this,10)">Top 10</button>
-            <button class="toggle-btn" onclick="setRoleLimit(this,'all')">All</button>
-          </div>
-        </div>
-        <div class="chart-canvas"><canvas id="roleChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><div class="chart-title">By County</div><div class="chart-sub">Geographic distribution</div></div>
-          <div class="toggle-group" id="countyToggle">
-            <button class="toggle-btn active" onclick="setCountyLimit(this,5)">Top 5</button>
-            <button class="toggle-btn" onclick="setCountyLimit(this,10)">Top 10</button>
-            <button class="toggle-btn" onclick="setCountyLimit(this,15)">Top 15</button>
-            <button class="toggle-btn" onclick="setCountyLimit(this,'all')">All</button>
-          </div>
-        </div>
-        <div class="chart-canvas"><canvas id="countyChart"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Facility Level + Ownership -->
-    <div class="charts-row charts-2col">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><div class="chart-title">Facility Level</div><div class="chart-sub">Distribution by KEPH tier</div></div>
-        </div>
-        <div class="chart-canvas"><canvas id="facilityChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><div class="chart-title">Facility Ownership</div><div class="chart-sub">Ownership distribution</div></div>
-        </div>
-        <div class="chart-canvas"><canvas id="ownershipChart"></canvas></div>
-      </div>
-    </div>
-
-    <!-- TABLE -->
-    <div class="table-section">
-      <div class="table-header">
-        <div>
-          <div class="table-title">Recent Registrations</div>
-          <div style="font-size:.78rem;color:var(--muted);margin-top:3px" id="tableSubtitle"></div>
-        </div>
-        <div class="show-chips" id="showChips">
-          <div class="show-chip" onclick="setTableLimit(this,25)">25</div>
-          <div class="show-chip" onclick="setTableLimit(this,50)">50</div>
-          <div class="show-chip active" onclick="setTableLimit(this,100)">100</div>
-          <div class="show-chip" onclick="setTableLimit(this,'all')">All</div>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Date &amp; Time</th><th>Name</th><th>Email</th>
-              <th>County</th><th>Facility</th><th>Role</th>
-              <th>Ownership</th><th>Phone</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-      <div class="table-footer">
-        <div class="row-count" id="rowCount"></div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<script>
-/* ============================================================
-   ANALYTICS — fully dynamic, driven by filteredData
-   ============================================================ */
-const GOK_COLOR   = '#059669';
-const PRIV_COLOR  = '#dc2626';
-const FAITH_COLOR = '#f59e0b';
-
-let aCharts = {};
-function destroyAChart(id) { if(aCharts[id]){ aCharts[id].destroy(); delete aCharts[id]; } }
-
-/* ── Categorise a single row's ownership into GOK / Private / Faith / Other ── */
-function ownershipBucket(row) {
-  const o = normalizeOwnership(getVal(row, 'ownership'));
-  if (o.includes('Gov'))   return 'gok';
-  if (o === 'Private')     return 'private';
-  if (o.includes('Faith')) return 'faith';
-  return 'other';
-}
-
-/* ── Compute all four breakdown tables from filteredData ── */
-function computeAnalytics() {
-  const tsCol = columnMap.timestamp;
-
-  /* totals */
-  let totGok=0, totPriv=0, totFaith=0, totOther=0;
-  filteredData.forEach(r => {
-    const b = ownershipBucket(r);
-    if (b==='gok')     totGok++;
-    else if (b==='private') totPriv++;
-    else if (b==='faith')   totFaith++;
-    else                    totOther++;
-  });
-  const grandTotal = filteredData.length;
-
-  /* by date */
-  const dateMap = {};
-  filteredData.forEach(r => {
-    const d = parseDate(r[tsCol]);
-    const key = d.toLocaleDateString('en-GB'); // dd/mm/yyyy
-    if (!dateMap[key]) dateMap[key] = {gok:0, private:0, faith:0, other:0};
-    dateMap[key][ownershipBucket(r)]++;
-  });
-  // sort chronologically
-  const byDate = Object.entries(dateMap).sort((a,b)=>{
-    const [da,ma,ya]=a[0].split('/'), [db,mb,yb]=b[0].split('/');
-    return (ya+ma+da).localeCompare(yb+mb+db);
-  }).map(([date, v]) => ({ date, gok:v.gok, private:v.private, faith:v.faith, other:v.other, total:v.gok+v.private+v.faith+v.other }));
-
-  /* by level */
-  const levelMap = {};
-  filteredData.forEach(r => {
-    const lvl = (getVal(r,'level')||'Not Specified').trim().toUpperCase();
-    if (!levelMap[lvl]) levelMap[lvl] = {gok:0, private:0, faith:0, other:0};
-    levelMap[lvl][ownershipBucket(r)]++;
-  });
-  const byLevel = Object.entries(levelMap).sort((a,b)=>a[0].localeCompare(b[0]))
-    .map(([level, v]) => ({ level, gok:v.gok, private:v.private, faith:v.faith, other:v.other, total:v.gok+v.private+v.faith+v.other }));
-
-  /* by county */
-  const countyMap = {};
-  filteredData.forEach(r => {
-    const c = (getVal(r,'county')||'Not Specified').trim();
-    if (!countyMap[c]) countyMap[c] = {gok:0, private:0, faith:0, other:0};
-    countyMap[c][ownershipBucket(r)]++;
-  });
-  const byCounty = Object.entries(countyMap).sort((a,b)=>(b[1].gok+b[1].private+b[1].faith+b[1].other)-(a[1].gok+a[1].private+a[1].faith+a[1].other))
-    .map(([county, v]) => ({ county, gok:v.gok, private:v.private, faith:v.faith, other:v.other, total:v.gok+v.private+v.faith+v.other }));
-
-  return { grandTotal, totGok, totPriv, totFaith, totOther, byDate, byLevel, byCounty };
-}
-
-function openAnalytics() {
-  document.getElementById('analyticsModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  // always rebuild from current filteredData
-  setTimeout(() => buildAnalyticsCharts(), 80);
-}
-
-function closeAnalytics() {
-  document.getElementById('analyticsModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function handleModalClick(e) {
-  if (e.target === document.getElementById('analyticsModal')) closeAnalytics();
-}
-
-function switchTab(btn, tabId) {
-  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(tabId).classList.add('active');
-}
-
-function buildAnalyticsCharts() {
-  const { grandTotal, totGok, totPriv, totFaith, totOther, byDate, byLevel, byCounty } = computeAnalytics();
-
-  /* ── Update subtitle ── */
-  const fromVal = document.getElementById('fromDate').value;
-  const toVal   = document.getElementById('toDate').value;
-  const dateRange = (fromVal || toVal) ? `${fromVal||'…'} → ${toVal||'…'}` : 'All time';
-  document.getElementById('analyticsSubtitle').textContent =
-    `${grandTotal.toLocaleString()} registrations · ${dateRange} · based on active filters`;
-
-  /* ── OVERVIEW: summary cards ── */
-  document.getElementById('an-total').textContent   = grandTotal.toLocaleString();
-  document.getElementById('an-gok').textContent     = totGok.toLocaleString();
-  document.getElementById('an-private').textContent = totPriv.toLocaleString();
-  document.getElementById('an-faith').textContent   = totFaith.toLocaleString();
-
-  /* ── OVERVIEW: ownership bar ── */
-  destroyAChart('overviewOwner');
-  aCharts.overviewOwner = new Chart(document.getElementById('overviewOwnerChart'), {
-    type: 'bar',
-    data: {
-      labels: ['GOK / Government', 'Private', 'Faith Based', 'Other'],
-      datasets: [{ data: [totGok, totPriv, totFaith, totOther],
-        backgroundColor: [GOK_COLOR, PRIV_COLOR, FAITH_COLOR, '#6366f1'], borderRadius: 8, borderSkipped: false }]
-    },
-    options: { responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{ y:{beginAtZero:true, ticks:{color:'#6b8cba'}, grid:{color:'rgba(208,224,247,0.5)'}},
-               x:{ticks:{color:'#0f2a52',font:{size:11}}, grid:{display:false}} } }
-  });
-
-  /* ── OVERVIEW: ownership doughnut ── */
-  const pct = v => grandTotal ? (v/grandTotal*100).toFixed(1)+'%' : '0%';
-  destroyAChart('overviewPie');
-  aCharts.overviewPie = new Chart(document.getElementById('overviewPieChart'), {
-    type: 'doughnut',
-    data: {
-      labels: [`GOK (${pct(totGok)})`, `Private (${pct(totPriv)})`, `Faith (${pct(totFaith)})`, `Other (${pct(totOther)})`],
-      datasets: [{ data: [totGok, totPriv, totFaith, totOther],
-        backgroundColor: [GOK_COLOR, PRIV_COLOR, FAITH_COLOR, '#6366f1'], borderWidth:3, borderColor:'#fff' }]
-    },
-    options: { responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:12, font:{size:11}, color:'#0f2a52' } } } }
-  });
-
-  /* ── OVERVIEW: top 10 counties table ── */
-  const top10 = byCounty.slice(0, 10);
-  document.getElementById('topCountyTableBody').innerHTML = top10.map((c,i) => `
-    <tr>
-      <td style="color:var(--muted);font-weight:600">${i+1}</td>
-      <td style="font-weight:600">${c.county}</td>
-      <td><span class="badge-gok">${c.gok}</span></td>
-      <td><span class="badge-private">${c.private}</span></td>
-      <td><span class="badge-faith">${c.faith}</span></td>
-      <td><span class="badge-total">${c.total}</span></td>
-      <td>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar"><div class="progress-fill" style="width:${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%"></div></div>
-          <span class="progress-pct">${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%</span>
-        </div>
-      </td>
-    </tr>`).join('');
-
-  /* ── DATE: update chart title ── */
-  document.getElementById('dateTrendTitle').textContent =
-    `Daily Registrations — ${byDate.length} day${byDate.length===1?'':'s'} in selection`;
-
-  /* ── DATE: stacked bar chart ── */
-  destroyAChart('dateStacked');
-  aCharts.dateStacked = new Chart(document.getElementById('dateStackedChart'), {
-    type: 'bar',
-    data: {
-      labels: byDate.map(d => d.date),
-      datasets: [
-        { label:'GOK',         data:byDate.map(d=>d.gok),     backgroundColor:GOK_COLOR,   borderRadius:0 },
-        { label:'Private',     data:byDate.map(d=>d.private), backgroundColor:PRIV_COLOR,  borderRadius:0 },
-        { label:'Faith Based', data:byDate.map(d=>d.faith),   backgroundColor:FAITH_COLOR, borderRadius:0 },
-        { label:'Other',       data:byDate.map(d=>d.other),   backgroundColor:'#6366f1',   borderRadius:0 }
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:11}, color:'#0f2a52' } } },
-      scales:{ x:{ stacked:true, ticks:{color:'#0f2a52',maxRotation:45}, grid:{display:false} },
-               y:{ stacked:true, beginAtZero:true, ticks:{color:'#6b8cba'}, grid:{color:'rgba(208,224,247,0.5)'} } } }
-  });
-
-  /* ── DATE: table ── */
-  const dateTotGok=byDate.reduce((s,d)=>s+d.gok,0);
-  const dateTotPriv=byDate.reduce((s,d)=>s+d.private,0);
-  const dateTotFaith=byDate.reduce((s,d)=>s+d.faith,0);
-  document.getElementById('dateTableBody').innerHTML =
-    byDate.map(d => `<tr>
-      <td style="font-weight:500">${d.date}</td>
-      <td><span class="badge-gok">${d.gok}</span></td>
-      <td><span class="badge-private">${d.private}</span></td>
-      <td><span class="badge-faith">${d.faith}</span></td>
-      <td><span class="badge-total">${d.total}</span></td>
-    </tr>`).join('') +
-    `<tr>
-      <td>GRAND TOTAL</td>
-      <td><span class="badge-gok">${dateTotGok}</span></td>
-      <td><span class="badge-private">${dateTotPriv}</span></td>
-      <td><span class="badge-faith">${dateTotFaith}</span></td>
-      <td><span class="badge-total">${grandTotal}</span></td>
-    </tr>`;
-
-  /* ── LEVEL: grouped bar ── */
-  destroyAChart('levelGrouped');
-  aCharts.levelGrouped = new Chart(document.getElementById('levelGroupedChart'), {
-    type: 'bar',
-    data: {
-      labels: byLevel.map(l => l.level),
-      datasets: [
-        { label:'GOK',         data:byLevel.map(l=>l.gok),     backgroundColor:GOK_COLOR,   borderRadius:4 },
-        { label:'Private',     data:byLevel.map(l=>l.private), backgroundColor:PRIV_COLOR,  borderRadius:4 },
-        { label:'Faith Based', data:byLevel.map(l=>l.faith),   backgroundColor:FAITH_COLOR, borderRadius:4 },
-        { label:'Other',       data:byLevel.map(l=>l.other),   backgroundColor:'#6366f1',   borderRadius:4 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 }, color: '#0f2a52' } } },
-      scales: {
-        x: { ticks: { color: '#0f2a52' }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { color: '#6b8cba' }, grid: { color: 'rgba(208,224,247,0.5)' } }
-      }
-    }
-  });
-
-  /* ── LEVEL: table ── */
-  const lvlTotGok   = byLevel.reduce((s,l)=>s+l.gok,0);
-  const lvlTotPriv  = byLevel.reduce((s,l)=>s+l.private,0);
-  const lvlTotFaith = byLevel.reduce((s,l)=>s+l.faith,0);
-  document.getElementById('levelTableBody').innerHTML =
-    byLevel.map(l => `<tr>
-      <td style="font-weight:500">${l.level}</td>
-      <td><span class="badge-gok">${l.gok}</span></td>
-      <td><span class="badge-private">${l.private}</span></td>
-      <td><span class="badge-faith">${l.faith}</span></td>
-      <td><span class="badge-total">${l.total}</span></td>
-      <td>${grandTotal ? (l.total/grandTotal*100).toFixed(1)+'%' : '0%'}</td>
-    </tr>`).join('') +
-    `<tr>
-      <td>GRAND TOTAL</td>
-      <td><span class="badge-gok">${lvlTotGok}</span></td>
-      <td><span class="badge-private">${lvlTotPriv}</span></td>
-      <td><span class="badge-faith">${lvlTotFaith}</span></td>
-      <td><span class="badge-total">${grandTotal}</span></td>
-      <td>100%</td>
-    </tr>`;
-
-  /* ── COUNTY: horizontal stacked bar (top 20) ── */
-  const top20 = byCounty.slice(0, 20);
-  const countyChartHeight = Math.max(280, top20.length * 22);
-  document.getElementById('allCountyChart').parentElement.style.height = countyChartHeight + 'px';
-  destroyAChart('allCounty');
-  aCharts.allCounty = new Chart(document.getElementById('allCountyChart'), {
-    type: 'bar',
-    data: {
-      labels: top20.map(c => c.county),
-      datasets: [
-        { label:'GOK',         data:top20.map(c=>c.gok),     backgroundColor:GOK_COLOR,   borderRadius:2 },
-        { label:'Private',     data:top20.map(c=>c.private), backgroundColor:PRIV_COLOR,  borderRadius:2 },
-        { label:'Faith Based', data:top20.map(c=>c.faith),   backgroundColor:FAITH_COLOR, borderRadius:2 },
-        { label:'Other',       data:top20.map(c=>c.other),   backgroundColor:'#6366f1',   borderRadius:2 }
-      ]
-    },
-    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:10}, color:'#0f2a52' } } },
-      scales:{ x:{ stacked:true, beginAtZero:true, ticks:{color:'#6b8cba'}, grid:{color:'rgba(208,224,247,0.5)'} },
-               y:{ stacked:true, ticks:{color:'#0f2a52',font:{size:10}}, grid:{display:false} } } }
-  });
-
-  /* ── COUNTY: full ranked table ── */
-  document.getElementById('countyFullTableBody').innerHTML =
-    byCounty.map((c,i) => `<tr>
-      <td style="color:var(--muted);font-weight:600">${i+1}</td>
-      <td style="font-weight:500">${c.county}</td>
-      <td><span class="badge-gok">${c.gok}</span></td>
-      <td><span class="badge-private">${c.private}</span></td>
-      <td><span class="badge-faith">${c.faith}</span></td>
-      <td><span class="badge-total">${c.total}</span></td>
-      <td>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar"><div class="progress-fill" style="width:${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%"></div></div>
-          <span class="progress-pct">${grandTotal?(c.total/grandTotal*100).toFixed(1):0}%</span>
-        </div>
-      </td>
-    </tr>`).join('') +
-    `<tr>
-      <td></td>
-      <td>GRAND TOTAL</td>
-      <td><span class="badge-gok">${byCounty.reduce((s,c)=>s+c.gok,0)}</span></td>
-      <td><span class="badge-private">${byCounty.reduce((s,c)=>s+c.private,0)}</span></td>
-      <td><span class="badge-faith">${byCounty.reduce((s,c)=>s+c.faith,0)}</span></td>
-      <td><span class="badge-total">${grandTotal}</span></td>
-      <td><span class="progress-pct">100%</span></td>
-    </tr>`;
-}
-
-
-/* ============================================================
-   MAIN DASHBOARD LOGIC (unchanged)
-   ============================================================ */
-const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTspwnQQtlpmk59QD_H50sMF7WKHsgdFxTI9K4QcBFYJ8K4-YB8WIZnZbEImE7dj7M2yPtcDCm2M9IJ/pub?output=csv';
-
-const isLocalhost = ['localhost','127.0.0.1',''].includes(window.location.hostname);
-
-const DATA_URLS = isLocalhost ? [
-  `https://api.allorigins.win/get?url=${encodeURIComponent(PUBLISHED_CSV_URL)}`,
-  `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`,
-  PUBLISHED_CSV_URL
-] : [
-  PUBLISHED_CSV_URL,
-  `https://api.allorigins.win/get?url=${encodeURIComponent(PUBLISHED_CSV_URL)}`,
-  `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`
-];
-
-const OFFICIAL_COUNTIES = new Set([
-  'baringo','bomet','bungoma','busia','elgeyo marakwet','embu','garissa','homa bay',
-  'isiolo','kajiado','kakamega','kericho','kiambu','kilifi','kirinyaga','kisii','kisumu',
-  'kitui','kwale','laikipia','lamu','machakos','makueni','mandera','marsabit','meru',
-  'migori','mombasa','muranga',"murang'a",'nairobi','nakuru','nandi','narok','nyamira',
-  'nyandarua','nyeri','samburu','siaya','taita taveta','tana river','tanariver',
-  'tharaka nithi','tharaka-nithi','trans nzoia','turkana','uasin gishu','vihiga','wajir','west pokot'
-]);
-
-let allData=[], filteredData=[], columnMap={}, charts={};
-let activeOwnershipFilter='', activeFacilitySearch='', activeLevelFilter='';
-let tableLimit=100, dailyPeriod=30, roleLimit=5, countyLimit=5;
-
-function normalizeOwnership(raw) {
-  if (!raw) return 'Not Specified';
-  const l = raw.toLowerCase().trim();
-  if (l.includes('faith') || l==='fbo') return 'Faith Based';
-  if (l.includes('gover') || l.includes('gok') || l.includes('county gov')) return 'Government (GOK/County)';
-  if (l==='private' || l==='private facility') return 'Private';
-  return 'Other';
-}
-
-function ownershipClass(o) {
-  if (o.includes('Gov'))   return 'own-gov';
-  if (o==='Private')       return 'own-private';
-  if (o.includes('Faith')) return 'own-faith';
-  return 'own-other';
-}
-
-const parseDate = d => {
-  if (!d) return new Date();
-  try {
-    d = String(d).trim();
-    if (d.includes('/')) {
-      const [datePart, timePart='00:00:00'] = d.split(' ');
-      const p = datePart.split('/');
-      if (p.length===3) {
-        let day,month,year;
-        if (p[2].length===4)      { day=+p[0]; month=+p[1]; year=+p[2]; }
-        else if (p[0].length===4) { year=+p[0]; month=+p[1]; day=+p[2]; }
-        else                      { day=+p[0]; month=+p[1]; year=+p[2]; }
-        const [h,m,s] = timePart.split(':').map(Number);
-        return new Date(year, month-1, day, h||0, m||0, s||0);
-      }
-    }
-    const parsed = new Date(d);
-    return isNaN(parsed.getTime()) ? new Date() : parsed;
-  } catch(e) { return new Date(); }
-};
-
-const dateToYMD = d =>
-  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-
-function getVal(row, field) {
-  const col = columnMap[field];
-  return col ? String(row[col]||'').trim() : '';
-}
-
-function detectColumns(headers) {
-  columnMap = {};
-  const hl = headers.map(h=>h.toLowerCase().trim());
-  const map = {
-    timestamp: ['timestamp','date','time','submitted at','submission date'],
-    email:     ['email address','email','e-mail','emailaddress'],
-    name:      ['your name','name','full name','respondent name'],
-    facility:  ['facility name','facility','health facility','facility_name'],
-    county:    ['county','county name'],
-    ownership: ['facility ownership','ownership','facility_ownership','ownership type'],
-    level:     ['facility level','level','facility_level','keph level'],
-    phone:     ['phone number','phone','telephone','mobile','phone_number','contact'],
-    role:      ['your role','role','designation','job title','position']
-  };
-  for (const [key,names] of Object.entries(map)) {
-    for (const name of names) {
-      const idx = hl.indexOf(name);
-      if (idx!==-1) { columnMap[key]=headers[idx]; break; }
-    }
-    if (!columnMap[key]) {
-      for (const name of names) {
-        const idx = hl.findIndex(h=>h.includes(name)||name.includes(h));
-        if (idx!==-1) { columnMap[key]=headers[idx]; break; }
-      }
-    }
-  }
-}
-
-function setConnStatus(type, msg) {
-  document.getElementById('connBadge').className=`conn-badge ${type}`;
-  document.getElementById('connText').textContent=msg;
-  const sub=document.getElementById('loadingStatus');
-  if (sub) sub.textContent=msg;
-}
-
-function updateTimestamp() {
-  document.getElementById('lastUpdated').textContent =
-    'Updated '+new Date().toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'});
-}
-
-async function loadData() {
-  setConnStatus('connecting','Connecting...');
-  const urls = DATA_URLS.map(url => {
-    const ts = Date.now();
-    return (url.includes('allorigins.win')||url.includes('corsproxy.io'))
-      ? url+(url.includes('?')?'&':'?')+`_t=${ts}`
-      : url+`&_t=${ts}`;
-  });
-
-  for (let i=0; i<urls.length; i++) {
-    try {
-      setConnStatus('connecting',`Trying method ${i+1}/${urls.length}...`);
-      const rsp = await fetch(urls[i],{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
-      if (!rsp.ok) throw new Error(`HTTP ${rsp.status}`);
-
-      let csv;
-      if (urls[i].includes('allorigins.win')) {
-        const data = await rsp.json();
-        if (!data.contents) throw new Error('No contents in proxy response');
-        csv = data.contents;
-      } else {
-        csv = await rsp.text();
-      }
-
-      if (csv.trim().startsWith('<!DOCTYPE')||csv.trim().startsWith('<html'))
-        throw new Error('Got HTML — sheet may not be published');
-
-      Papa.parse(csv, {
-        header:true, skipEmptyLines:true,
-        complete: res => {
-          const headers = Object.keys(res.data[0]||{});
-          detectColumns(headers);
-          const tsCol = columnMap.timestamp;
-          if (!tsCol) throw new Error('Timestamp column not found. Columns: '+headers.join(', '));
-
-          allData = res.data.filter(r => {
-            const ts=r[tsCol];
-            return ts && String(ts).trim() && ts!=='Timestamp';
-          });
-
-          if (allData.length===0) throw new Error('No valid data rows found');
-
-          const isFirstLoad = document.getElementById('dashboard').style.display === 'none';
-
-          if (isFirstLoad) {
-            filteredData=[...allData];
-            populateOwnershipFilter();
-            populateLevelFilter();
+    <script>
+        const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTspwnQQtlpmk59QD_H50sMF7WKHsgdFxTI9K4QcBFYJ8K4-YB8WIZnZbEImE7dj7M2yPtcDCm2M9IJ/pub?output=csv';
+        
+        const isLocalhost = ['localhost','127.0.0.1',''].includes(window.location.hostname);
+        
+        const DATA_URLS = isLocalhost ? [
+          `https://api.allorigins.win/get?url=${encodeURIComponent(PUBLISHED_CSV_URL)}`,
+          `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`,
+          PUBLISHED_CSV_URL
+        ] : [
+          PUBLISHED_CSV_URL,
+          `https://api.allorigins.win/get?url=${encodeURIComponent(PUBLISHED_CSV_URL)}`,
+          `https://corsproxy.io/?${encodeURIComponent(PUBLISHED_CSV_URL)}`
+        ];
+
+        let allData = [];
+        let filteredData = [];
+        let columnMapping = {};
+        let charts = {};
+        let tableLimit = 100;
+
+        const COLUMN_PATTERNS = {
+            timestamp: ['start time', 'completion time', 'timestamp', 'date', 'time'],
+            email: ['email', 'email address'],
+            name: ['name', 'your name', 'full name'],
+            county: ['county'],
+            facility: ['facility name', 'facility'],
+            level: ['facility keph level', 'level', 'keph level'],
+            role: ['role in the facility', 'role', 'designation'],
+            ownership: ['facility ownership', 'ownership']
+        };
+
+        async function initDashboard() {
+            updateStatus('loading', 'Loading data...');
+            try {
+                await loadData();
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                updateStatus('live', 'Live');
+                updateTimestamp();
+            } catch (error) {
+                updateStatus('error', 'Error loading data');
+                console.error('Error:', error);
+                document.getElementById('loadingStatus').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function loadData() {
+            const urls = DATA_URLS.map(url => {
+                const ts = Date.now();
+                return (url.includes('allorigins.win')||url.includes('corsproxy.io'))
+                  ? url+(url.includes('?')?'&':'?')+`_t=${ts}`
+                  : url+`&_t=${ts}`;
+            });
+
+            for (let i=0; i<urls.length; i++) {
+                try {
+                    document.getElementById('loadingStatus').textContent = `Trying method ${i+1}/${urls.length}...`;
+                    const rsp = await fetch(urls[i],{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+                    if (!rsp.ok) throw new Error(`HTTP ${rsp.status}`);
+
+                    let csv;
+                    if (urls[i].includes('allorigins.win')) {
+                        const data = await rsp.json();
+                        if (!data.contents) throw new Error('No contents in proxy response');
+                        csv = data.contents;
+                    } else {
+                        csv = await rsp.text();
+                    }
+
+                    if (csv.trim().startsWith('<!DOCTYPE')||csv.trim().startsWith('<html'))
+                        throw new Error('Got HTML — sheet may not be published');
+
+                    return new Promise((resolve, reject) => {
+                        Papa.parse(csv, {
+                            header: true,
+                            skipEmptyLines: true,
+                            complete: (results) => {
+                                detectColumns(results.meta.fields);
+                                allData = results.data.filter(r => {
+                                    const ts = r[columnMapping.timestamp];
+                                    return ts && String(ts).trim() && ts !== 'Timestamp';
+                                });
+                                if (allData.length === 0) throw new Error('No valid data rows found');
+                                filteredData = [...allData];
+                                populateFilters();
+                                processData();
+                                resolve();
+                            },
+                            error: (err) => reject(new Error('CSV parse: ' + err.message))
+                        });
+                    });
+                } catch(e) {
+                    console.warn(`Source ${i+1} failed:`,e.message);
+                    if (i===urls.length-1) throw e;
+                }
+            }
+        }
+
+        function detectColumns(headers) {
+            headers.forEach(header => {
+                const lowerHeader = header.toLowerCase().trim();
+                for (const [key, patterns] of Object.entries(COLUMN_PATTERNS)) {
+                    if (patterns.some(pattern => lowerHeader.includes(pattern))) {
+                        columnMapping[key] = header;
+                        break;
+                    }
+                }
+            });
+        }
+
+        function getColumnValue(row, columnKey) {
+            const columnName = columnMapping[columnKey];
+            return columnName ? (row[columnName] || '').toString().trim() : '';
+        }
+
+        function populateFilters() {
+            const counties = new Set();
+            const ownerships = new Set();
+            const levels = new Set();
+            const roles = new Set();
+
+            filteredData.forEach(row => {
+                const county = getColumnValue(row, 'county');
+                const ownership = getColumnValue(row, 'ownership');
+                const level = getColumnValue(row, 'level');
+                const role = getColumnValue(row, 'role');
+
+                if (county) counties.add(county);
+                if (ownership) ownerships.add(ownership);
+                if (level) levels.add(level);
+                if (role) roles.add(role);
+            });
+
+            populateSelect('countyFilter', Array.from(counties).sort());
+            populateSelect('ownershipFilter', Array.from(ownerships).sort());
+            populateSelect('levelFilter', Array.from(levels).sort());
+            populateSelect('roleFilter', Array.from(roles).sort());
+        }
+
+        function populateSelect(selectId, options) {
+            const select = document.getElementById(selectId);
+            const defaultOption = select.querySelector('option[value=""]');
+            select.innerHTML = '';
+            select.appendChild(defaultOption);
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.textContent = option;
+                select.appendChild(opt);
+            });
+        }
+
+        function processData() {
+            updateStats();
+            updateCharts();
+            updateTable();
+        }
+
+        function updateStats() {
+            const today = new Date();
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+            document.getElementById('totalRegistrations').textContent = filteredData.length.toLocaleString();
+            
+            const todayCount = filteredData.filter(row => {
+                const timestamp = getColumnValue(row, 'timestamp');
+                const date = new Date(timestamp);
+                return date.toDateString() === today.toDateString();
+            }).length;
+            document.getElementById('todayRegistrations').textContent = todayCount.toLocaleString();
+
+            const weekCount = filteredData.filter(row => {
+                const timestamp = getColumnValue(row, 'timestamp');
+                const date = new Date(timestamp);
+                return date >= weekAgo;
+            }).length;
+            document.getElementById('weekRegistrations').textContent = weekCount.toLocaleString();
+
+            const counties = new Set(filteredData.map(row => getColumnValue(row, 'county')).filter(Boolean));
+            document.getElementById('countiesCount').textContent = counties.size;
+
+            const ownerships = new Set(filteredData.map(row => getColumnValue(row, 'ownership')).filter(Boolean));
+            document.getElementById('facilityTypes').textContent = ownerships.size;
+
+            document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', { 
+                month: 'short', day: 'numeric', year: 'numeric' 
+            });
+        }
+
+        function updateCharts() {
+            updateTrendChart();
+            updateOwnershipChart();
+            updateCountyChart();
+            updateLevelChart();
+        }
+
+        function updateTrendChart() {
+            const dailyCounts = {};
+            filteredData.forEach(row => {
+                const timestamp = getColumnValue(row, 'timestamp');
+                const date = new Date(timestamp);
+                const dateKey = date.toISOString().split('T')[0];
+                dailyCounts[dateKey] = (dailyCounts[dateKey] || 0) + 1;
+            });
+
+            const sortedDates = Object.keys(dailyCounts).sort();
+            const labels = sortedDates.map(date => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const data = sortedDates.map(date => dailyCounts[date]);
+
+            destroyChart('trendChart');
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            charts.trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Registrations',
+                        data: data,
+                        borderColor: '#0ea5e9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#e5e7eb' } },
+                        x: { ticks: { color: '#6b7280' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function updateOwnershipChart() {
+            const ownershipCounts = {};
+            filteredData.forEach(row => {
+                const ownership = getColumnValue(row, 'ownership') || 'Not Specified';
+                ownershipCounts[ownership] = (ownershipCounts[ownership] || 0) + 1;
+            });
+
+            const labels = Object.keys(ownershipCounts);
+            const data = Object.values(ownershipCounts);
+
+            destroyChart('ownershipChart');
+            const ctx = document.getElementById('ownershipChart').getContext('2d');
+            charts.ownershipChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#0ea5e9','#8b5cf6','#10b981','#f59e0b','#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } } }
+                }
+            });
+        }
+
+        function updateCountyChart() {
+            const countyCounts = {};
+            filteredData.forEach(row => {
+                const county = getColumnValue(row, 'county');
+                if (county) countyCounts[county] = (countyCounts[county] || 0) + 1;
+            });
+
+            const sorted = Object.entries(countyCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            const labels = sorted.map(([county]) => county);
+            const data = sorted.map(([, count]) => count);
+
+            destroyChart('countyChart');
+            const ctx = document.getElementById('countyChart').getContext('2d');
+            charts.countyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{ label: 'Registrations', data: data, backgroundColor: '#0ea5e9' }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#e5e7eb' } },
+                        y: { ticks: { color: '#6b7280' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function updateLevelChart() {
+            const levelCounts = {};
+            filteredData.forEach(row => {
+                const level = getColumnValue(row, 'level') || 'Not Specified';
+                levelCounts[level] = (levelCounts[level] || 0) + 1;
+            });
+
+            const labels = Object.keys(levelCounts).sort();
+            const data = labels.map(level => levelCounts[level]);
+
+            destroyChart('levelChart');
+            const ctx = document.getElementById('levelChart').getContext('2d');
+            charts.levelChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{ label: 'Registrations', data: data, backgroundColor: '#8b5cf6' }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#6b7280' }, grid: { color: '#e5e7eb' } },
+                        x: { ticks: { color: '#6b7280' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            const limit = tableLimit === 'all' ? filteredData.length : parseInt(tableLimit);
+            const displayData = filteredData.slice(0, limit);
+
+            tbody.innerHTML = displayData.map(row => {
+                const ownership = getColumnValue(row, 'ownership');
+                let badgeClass = 'badge-primary';
+                if (ownership.toLowerCase().includes('gov')) badgeClass = 'badge-success';
+                else if (ownership.toLowerCase().includes('private')) badgeClass = 'badge-warning';
+                else if (ownership.toLowerCase().includes('faith')) badgeClass = 'badge-danger';
+
+                return `
+                    <tr>
+                        <td class="text-muted">${formatDate(getColumnValue(row, 'timestamp'))}</td>
+                        <td class="font-semibold">${getColumnValue(row, 'name') || '-'}</td>
+                        <td class="text-muted">${getColumnValue(row, 'email') || '-'}</td>
+                        <td>${getColumnValue(row, 'county') || '-'}</td>
+                        <td>${getColumnValue(row, 'facility') || '-'}</td>
+                        <td>${getColumnValue(row, 'level') || '-'}</td>
+                        <td>${getColumnValue(row, 'role') || '-'}</td>
+                        <td><span class="badge ${badgeClass}">${ownership || 'Not Specified'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('tableFooter').textContent = 
+                `Showing ${displayData.length} of ${filteredData.length} registrations`;
+            document.getElementById('tableSubtitle').textContent = 
+                `${displayData.length} most recent entries`;
+        }
+
+        function applyQuickFilter(period) {
+            document.querySelectorAll('.quick-filter-chip').forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const today = new Date();
+            let fromDate = null;
+
+            switch(period) {
+                case 'today': fromDate = today; break;
+                case 'yesterday': fromDate = new Date(today.getTime() - 24 * 60 * 60 * 1000); break;
+                case '7days': fromDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000); break;
+                case '30days': fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000); break;
+                case 'all': fromDate = null; break;
+            }
+
+            if (fromDate) {
+                document.getElementById('fromDate').value = formatDateInput(fromDate);
+                document.getElementById('toDate').value = formatDateInput(today);
+            } else {
+                document.getElementById('fromDate').value = '';
+                document.getElementById('toDate').value = '';
+            }
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const county = document.getElementById('countyFilter').value;
+            const ownership = document.getElementById('ownershipFilter').value;
+            const level = document.getElementById('levelFilter').value;
+            const role = document.getElementById('roleFilter').value;
+
+            filteredData = allData.filter(row => {
+                if (fromDate) {
+                    const rowDate = new Date(getColumnValue(row, 'timestamp'));
+                    if (rowDate < new Date(fromDate)) return false;
+                }
+                if (toDate) {
+                    const rowDate = new Date(getColumnValue(row, 'timestamp'));
+                    if (rowDate > new Date(toDate + 'T23:59:59')) return false;
+                }
+                if (county && getColumnValue(row, 'county') !== county) return false;
+                if (ownership && getColumnValue(row, 'ownership') !== ownership) return false;
+                if (level && getColumnValue(row, 'level') !== level) return false;
+                if (role && getColumnValue(row, 'role') !== role) return false;
+                return true;
+            });
+
             processData();
-            document.getElementById('loadingScreen').style.display='none';
-            document.getElementById('dashboard').style.display='block';
-          } else {
-            applyFilter();
-          }
+        }
 
-          updateTimestamp();
-          setConnStatus('success',`✓ Live — ${allData.length} records`);
-        },
-        error: err => { throw new Error('CSV parse: '+err.message); }
-      });
-      return;
+        function resetFilters() {
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            document.getElementById('countyFilter').value = '';
+            document.getElementById('ownershipFilter').value = '';
+            document.getElementById('levelFilter').value = '';
+            document.getElementById('roleFilter').value = '';
+            document.querySelectorAll('.quick-filter-chip').forEach(chip => chip.classList.remove('active'));
+            document.querySelector('.quick-filter-chip:last-child').classList.add('active');
+            filteredData = [...allData];
+            processData();
+        }
 
-    } catch(e) {
-      console.warn(`Source ${i+1} failed:`,e.message);
-      if (i===urls.length-1) {
-        showError(e.message);
-        setConnStatus('error','✕ Connection failed');
-      }
-    }
-  }
-}
+        function setTableLimit(limit) {
+            document.querySelectorAll('.table-control-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            tableLimit = limit;
+            updateTable();
+        }
 
-function showError(msg) {
-  document.getElementById('loadingScreen').innerHTML=`
-    <div class="error-card">
-      <div class="error-title">⚠️ Could Not Load Data</div>
-      <div class="error-body">${msg}<br><br>
-        Make sure your Google Sheet is published to web as CSV (File → Share → Publish to web).</div>
-      <div class="debug-box">Mode: ${isLocalhost?'Local':'Production'}<br>URL: ${PUBLISHED_CSV_URL}</div>
-      <button class="retry-btn" onclick="location.reload()">🔄 Retry</button>
-    </div>`;
-}
+        function exportData() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(filteredData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Training Data');
+            XLSX.writeFile(wb, `training_data_${formatDateInput(new Date())}.xlsx`);
+        }
 
-function populateOwnershipFilter() {
-  const counts={};
-  filteredData.forEach(r=>{ const o=normalizeOwnership(getVal(r,'ownership')); counts[o]=(counts[o]||0)+1; });
-  const sel=document.getElementById('ownershipFilter');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All Facilities</option>';
-  ['Government (GOK/County)','Private','Faith Based','Other'].forEach(o=>{
-    if (counts[o]) sel.innerHTML+=`<option value="${o}">${o} (${counts[o]})</option>`;
-  });
-  if (cur && !counts[cur]) { sel.value=''; activeOwnershipFilter=''; } else if (cur) { sel.value=cur; }
-}
+        function destroyChart(chartId) {
+            if (charts[chartId]) {
+                charts[chartId].destroy();
+                delete charts[chartId];
+            }
+        }
 
-function populateLevelFilter() {
-  const counts={};
-  filteredData.forEach(r=>{ const l=(getVal(r,'level')||'').trim().toUpperCase(); if(l) counts[l]=(counts[l]||0)+1; });
-  const sel=document.getElementById('levelFilter');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All Levels</option>';
-  Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([l,n])=>{ sel.innerHTML+=`<option value="${l}">${l} (${n})</option>`; });
-  if (cur && !counts[cur]) { sel.value=''; activeLevelFilter=''; } else if (cur) { sel.value=cur; }
-}
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
 
-function applyQuickPick(el,v) {
-  document.querySelectorAll('.period-chips .chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  const today=new Date(); let from,to;
-  if (v==='today')          { from=to=today; }
-  else if (v==='yesterday') { from=to=new Date(today); from.setDate(today.getDate()-1); }
-  else if (v==='7days')     { from=new Date(today); from.setDate(today.getDate()-7); to=today; }
-  else if (v==='30days')    { from=new Date(today); from.setDate(today.getDate()-30); to=today; }
-  else                      { from=to=null; }
-  document.getElementById('fromDate').value = from?dateToYMD(from):'';
-  document.getElementById('toDate').value   = to?dateToYMD(to):'';
-  applyFilter();
-}
+        function formatDateInput(date) {
+            return date.toISOString().split('T')[0];
+        }
 
-function applyCustomRange()     { applyFilter(); }
-function applyOwnershipFilter() { activeOwnershipFilter=document.getElementById('ownershipFilter').value; applyFilter(); updateActiveTags(); }
-function applyLevelFilter()     { activeLevelFilter=document.getElementById('levelFilter').value;         applyFilter(); updateActiveTags(); }
-function applyFacilitySearch()  { activeFacilitySearch=document.getElementById('facilitySearch').value.trim().toLowerCase(); applyFilter(); updateActiveTags(); }
-function clearOwnershipFilter() { activeOwnershipFilter=''; document.getElementById('ownershipFilter').value=''; applyFilter(); updateActiveTags(); }
-function clearLevelFilter()     { activeLevelFilter='';     document.getElementById('levelFilter').value='';     applyFilter(); updateActiveTags(); }
-function clearFacilitySearch()  { activeFacilitySearch='';  document.getElementById('facilitySearch').value='';  applyFilter(); updateActiveTags(); }
+        function updateStatus(type, text) {
+            document.getElementById('statusBadge').className = `status-badge ${type}`;
+            document.getElementById('statusText').textContent = text;
+        }
 
-function updateActiveTags() {
-  let h='';
-  if (activeOwnershipFilter) h+=`<div class="filter-tag">Ownership: ${activeOwnershipFilter}<button onclick="clearOwnershipFilter()">✕</button></div>`;
-  if (activeLevelFilter)     h+=`<div class="filter-tag">Level: ${activeLevelFilter}<button onclick="clearLevelFilter()">✕</button></div>`;
-  if (activeFacilitySearch)  h+=`<div class="filter-tag">Facility: "${activeFacilitySearch}"<button onclick="clearFacilitySearch()">✕</button></div>`;
-  document.getElementById('activeFilters').innerHTML=h;
-}
+        function updateTimestamp() {
+            document.getElementById('lastUpdated').textContent = 
+                `Updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+        }
 
-function applyFilter() {
-  const from=document.getElementById('fromDate').value;
-  const to=document.getElementById('toDate').value;
-  const tsCol=columnMap.timestamp;
+        function refreshData() {
+            location.reload();
+        }
 
-  filteredData=allData.filter(r=>{
-    const d=parseDate(r[tsCol]);
-    if (from && d<new Date(from)) return false;
-    if (to   && d>new Date(to+'T23:59:59')) return false;
-    return true;
-  });
-
-  populateOwnershipFilter();
-  populateLevelFilter();
-
-  filteredData=allData.filter(r=>{
-    const d=parseDate(r[tsCol]);
-    if (from && d<new Date(from)) return false;
-    if (to   && d>new Date(to+'T23:59:59')) return false;
-    if (activeOwnershipFilter && normalizeOwnership(getVal(r,'ownership'))!==activeOwnershipFilter) return false;
-    if (activeLevelFilter     && (getVal(r,'level')||'').trim().toUpperCase()!==activeLevelFilter) return false;
-    if (activeFacilitySearch  && !getVal(r,'facility').toLowerCase().includes(activeFacilitySearch)) return false;
-    return true;
-  });
-
-  processData();
-}
-
-function processData() {
-  const today=new Date(), tsCol=columnMap.timestamp;
-  const weekAgo=new Date(today); weekAgo.setDate(today.getDate()-7);
-
-  document.getElementById('totalRegistrations').textContent=filteredData.length.toLocaleString();
-  document.getElementById('todayRegistrations').textContent=filteredData.filter(r=>parseDate(r[tsCol]).toDateString()===today.toDateString()).length;
-  document.getElementById('weekRegistrations').textContent=filteredData.filter(r=>parseDate(r[tsCol])>=weekAgo).length;
-  document.getElementById('todayDate').textContent=today.toLocaleDateString('en-GB');
-
-  const seen=new Set();
-  filteredData.forEach(r=>{
-    const raw=getVal(r,'county').replace(/\s+/g,' ').toLowerCase().replace(/-/g,' ').replace(/'/g,"'");
-    if (OFFICIAL_COUNTIES.has(raw)) seen.add(raw);
-  });
-  document.getElementById('countiesCount').textContent=seen.size;
-
-  const ownSet=new Set();
-  filteredData.forEach(r=>{ const o=normalizeOwnership(getVal(r,'ownership')); if(o&&o!=='Not Specified') ownSet.add(o); });
-  document.getElementById('facilityOwnership').textContent=ownSet.size;
-
-  updateDailyChart();
-  updateRoleChart();
-  updateCountyChart();
-  updateFacilityChart();
-  updateOwnershipChart();
-  updateTable();
-}
-
-const COLORS=['#1a6fd4','#0ea5e9','#0369a1','#38bdf8','#7dd3fc','#bae6fd','#f59e0b','#059669','#dc2626','#6366f1'];
-function destroyChart(id){ if(charts[id]){charts[id].destroy();delete charts[id];} }
-
-function setDailyPeriod(el,v){ document.querySelectorAll('#dailyToggle .toggle-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); dailyPeriod=v; updateDailyChart(); }
-function setRoleLimit(el,v)  { document.querySelectorAll('#roleToggle .toggle-btn').forEach(b=>b.classList.remove('active'));  el.classList.add('active'); roleLimit=v;   updateRoleChart(); }
-function setCountyLimit(el,v){ document.querySelectorAll('#countyToggle .toggle-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); countyLimit=v; updateCountyChart(); }
-
-function updateDailyChart(){
-  const tsCol=columnMap.timestamp, daily={};
-  filteredData.forEach(r=>{ const d=parseDate(r[tsCol]).toLocaleDateString('en-GB'); daily[d]=(daily[d]||0)+1; });
-  let sorted=Object.entries(daily).sort((a,b)=>{
-    const [da,ma,ya]=a[0].split('/'), [db,mb,yb]=b[0].split('/');
-    return (ya+ma+da).localeCompare(yb+mb+db);
-  });
-  if (dailyPeriod!=='all') sorted=sorted.slice(-dailyPeriod);
-  destroyChart('daily');
-  charts.daily=new Chart(document.getElementById('dailyChart'),{
-    type:'line',
-    data:{labels:sorted.map(([d])=>d),datasets:[{label:'Registrations',data:sorted.map(([,v])=>v),borderColor:'#1a6fd4',backgroundColor:'rgba(26,111,212,0.08)',tension:0.35,fill:true,pointRadius:3,pointBackgroundColor:'#1a6fd4',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,color:'#6b8cba'},grid:{color:'rgba(208,224,247,0.6)'}},x:{ticks:{color:'#6b8cba',maxRotation:45},grid:{display:false}}}}
-  });
-}
-
-function updateRoleChart(){
-  const role={};
-  filteredData.forEach(r=>{const k=getVal(r,'role')||'Not Specified'; role[k]=(role[k]||0)+1;});
-  let sorted=Object.entries(role).sort((a,b)=>b[1]-a[1]);
-  if (roleLimit!=='all') sorted=sorted.slice(0,roleLimit);
-  destroyChart('role');
-  charts.role=new Chart(document.getElementById('roleChart'),{
-    type:'doughnut',
-    data:{labels:sorted.map(([k])=>k),datasets:[{data:sorted.map(([,v])=>v),backgroundColor:COLORS,borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:12,padding:10,font:{size:11},color:'#0f2a52'}}}}
-  });
-}
-
-function updateCountyChart(){
-  const county={};
-  filteredData.forEach(r=>{const c=getVal(r,'county')||'Not Specified'; county[c]=(county[c]||0)+1;});
-  let sorted=Object.entries(county).sort((a,b)=>b[1]-a[1]);
-  if (countyLimit!=='all') sorted=sorted.slice(0,countyLimit);
-  destroyChart('county');
-  charts.county=new Chart(document.getElementById('countyChart'),{
-    type:'bar',
-    data:{labels:sorted.map(([k])=>k),datasets:[{label:'Registrations',data:sorted.map(([,v])=>v),backgroundColor:'#1a6fd4',borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{color:'#6b8cba'},grid:{color:'rgba(208,224,247,0.6)'}},y:{ticks:{color:'#0f2a52',font:{size:11}},grid:{display:false}}}}
-  });
-}
-
-function updateFacilityChart(){
-  const lvl={};
-  filteredData.forEach(r=>{const k=(getVal(r,'level')||'Not Specified').toUpperCase(); lvl[k]=(lvl[k]||0)+1;});
-  const sorted=Object.entries(lvl).sort((a,b)=>a[0].localeCompare(b[0]));
-  destroyChart('facility');
-  charts.facility=new Chart(document.getElementById('facilityChart'),{
-    type:'bar',
-    data:{labels:sorted.map(([k])=>k),datasets:[{label:'Registrations',data:sorted.map(([,v])=>v),backgroundColor:COLORS,borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,color:'#6b8cba'},grid:{color:'rgba(208,224,247,0.6)'}},x:{ticks:{color:'#0f2a52'},grid:{display:false}}}}
-  });
-}
-
-function updateOwnershipChart(){
-  const own={};
-  filteredData.forEach(r=>{const k=normalizeOwnership(getVal(r,'ownership')); own[k]=(own[k]||0)+1;});
-  const sorted=Object.entries(own).sort((a,b)=>b[1]-a[1]);
-  destroyChart('ownership');
-  charts.ownership=new Chart(document.getElementById('ownershipChart'),{
-    type:'bar',
-    data:{labels:sorted.map(([k])=>k),datasets:[{label:'Facilities',data:sorted.map(([,v])=>v),backgroundColor:['#1a6fd4','#059669','#f59e0b','#0ea5e9'],borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,color:'#6b8cba'},grid:{color:'rgba(208,224,247,0.6)'}},x:{ticks:{color:'#0f2a52'},grid:{display:false}}}}
-  });
-}
-
-function setTableLimit(el,v){
-  document.querySelectorAll('.show-chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active'); tableLimit=v; updateTable();
-}
-
-function updateTable(){
-  const tsCol=columnMap.timestamp;
-  let data=[...filteredData].sort((a,b)=>parseDate(b[tsCol])-parseDate(a[tsCol]));
-  const total=data.length;
-  if (tableLimit!=='all') data=data.slice(0,tableLimit);
-  const tbody=document.getElementById('tableBody');
-  if (!data.length) {
-    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📭</div><p>No registrations match the current filters</p></div></td></tr>`;
-  } else {
-    tbody.innerHTML=data.map(r=>{
-      const own=normalizeOwnership(getVal(r,'ownership'));
-      return `<tr>
-        <td class="td-muted">${getVal(r,'timestamp')||'-'}</td>
-        <td style="font-weight:500">${getVal(r,'name')||'-'}</td>
-        <td class="td-muted">${getVal(r,'email')||'-'}</td>
-        <td>${getVal(r,'county')||'-'}</td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${getVal(r,'facility')}">${getVal(r,'facility')||'-'}</td>
-        <td><span class="role-badge">${getVal(r,'role')||'-'}</span></td>
-        <td><span class="role-badge ${ownershipClass(own)}">${own}</span></td>
-        <td class="td-muted">${getVal(r,'phone')||'-'}</td>
-      </tr>`;
-    }).join('');
-  }
-  document.getElementById('rowCount').textContent=`Showing ${Math.min(data.length,total)} of ${total} entries`;
-  document.getElementById('tableSubtitle').textContent=`${tableLimit==='all'?'All':tableLimit} most recent entries`;
-}
-
-function exportToExcel(){
-  const wb=XLSX.utils.book_new();
-  const rows=filteredData.map(r=>({
-    'Timestamp':          getVal(r,'timestamp'),
-    'Name':               getVal(r,'name'),
-    'Email':              getVal(r,'email'),
-    'County':             getVal(r,'county'),
-    'Facility Name':      getVal(r,'facility'),
-    'Facility Level':     getVal(r,'level'),
-    'Facility Ownership': normalizeOwnership(getVal(r,'ownership')),
-    'Role':               getVal(r,'role'),
-    'Phone Number':       getVal(r,'phone')
-  }));
-  const ws=XLSX.utils.json_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb,ws,'Registrations');
-  XLSX.writeFile(wb,`Training_Registrations_${new Date().toISOString().slice(0,10)}.xlsx`);
-}
-
-loadData();
-setInterval(()=>{ loadData(); }, 30000);
-</script>
+        document.addEventListener('DOMContentLoaded', initDashboard);
+        setInterval(refreshData, 5 * 60 * 1000);
+    </script>
 </body>
 </html>
